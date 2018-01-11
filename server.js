@@ -4,9 +4,11 @@ const cors       = require('cors');
 const bodyParser = require('body-parser');
 const mongoose   = require('mongoose');
 
-const User   = require('./routes/user_route');
-const Author = require('./routes/author_route');
-const opts   = require('./config/options');
+const User     = require('./routes/user_route');
+const Author   = require('./routes/author_route');
+const Category = require('./routes/category_route');
+const Book     = require('./routes/book_route');
+const opts     = require('./config/options');
 
 const port = process.env.PORT || 3000;
 const host = process.env.HOST || 'localhost';
@@ -25,6 +27,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // set up routes
 app.use('/api/v1', User);
 app.use('/api/v1', Author);
+app.use('/api/v1', Category);
+app.use('/api/v1', Book);
 
 // set up error handling
 app.use((req, res, next) => {
