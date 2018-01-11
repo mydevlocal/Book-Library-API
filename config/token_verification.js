@@ -9,11 +9,10 @@ exports.TokenVerification = (req, res, next) => {
 
 	if (bearerVal) {
 		getBearerVal = bearerVal.split(' ');
-		token = getBearerVal[getBearerVal - 1];
+		token = getBearerVal[getBearerVal.length - 1];
 	} else {
 		token = req.body.token || req.query.token;
 	}
-	console.log(token)
 
 	// token value is ready to use
 	if (token) {
