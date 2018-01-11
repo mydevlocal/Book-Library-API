@@ -38,11 +38,11 @@ router.post('/authors', isVerified, (req, res, next) => {
 	const fullname = req.body.fullname;
 	const email    = req.body.email;
 
-	let newUser = new Author();
+	let newAuthor = new Author();
 
-	newUser.fullname = fullname;
-	newUser.email    = email;
-	newUser.save((err, author) => {
+	newAuthor.fullname = fullname;
+	newAuthor.email    = email;
+	newAuthor.save((err, author) => {
 		if (err) {
 			res.json({ success: false, message: 'New author data cannot be save, please try again.', results: err });
 		} else {
