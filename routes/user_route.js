@@ -55,7 +55,7 @@ router.post('/signin', (req, res, next) => {
 			if(!user.comparePassword(password)) {
 				res.status(401).json({ success: false, message: 'Password didn\'t match.'});
 			} else {
-				// everyting passed
+				// everything passed
 				let payload = { id: user._id };
 
 				jwt.sign(payload, opts.jwtSecret.tokenKey, { expiresIn: '3d' }, (err, token) => {
