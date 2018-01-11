@@ -1,0 +1,27 @@
+{
+  "name": "books_library-api",
+  "version": "1.0.0",
+  "description": "Just a simple books library api",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "restful",
+    "api"
+  ],
+  "author": "Muh Ibnu Habil Hanafi",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "helmet": "^3.9.0",
+    "jsonwebtoken": "^8.1.0",
+    "moment": "^2.20.1",
+    "mongoose": "^4.13.9",
+    "passport-jwt": "^3.0.1"
+  }
+}
