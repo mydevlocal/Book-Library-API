@@ -37,10 +37,10 @@ router.get('/categories/:categoryid', isVerified, (req, res, next) => {
 router.post('/categories', isVerified, (req, res, next) => {
 	const category_name = req.body.category_name;
 
-	let newUser = new Category();
+	let newCategory = new Category();
 
-	newUser.category_name = category_name;
-	newUser.save((err, category) => {
+	newCategory.category_name = category_name;
+	newCategory.save((err, category) => {
 		if (err) {
 			res.json({ success: false, message: 'New category data cannot be save, please try again.', results: err });
 		} else {
