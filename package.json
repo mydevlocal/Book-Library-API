@@ -21,7 +21,6 @@
     "helmet": "^3.9.0",
     "jsonwebtoken": "^8.1.0",
     "moment": "^2.20.1",
-    "mongoose": "^4.13.9",
-    "passport-jwt": "^3.0.1"
+    "mongoose": "^4.13.9"
   }
 }
