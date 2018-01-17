@@ -56,16 +56,15 @@ router.put('/authors/:authorid', isVerified, (req, res, next) => {
 	const authorid  = req.params.authorid;
 	const fullname  = req.body.fullname;
 	const email     = req.body.email;
-	const updatedAt = Date.Now();
 
 	let updatedAuthor = new Author();
 
 	updatedAuthor.fullname  = fullname;
 	updatedAuthor.email     = email;
-	updatedAuthor.updatedAt = updatedAt;
+	updatedAuthor._id       = authorid;
 
 	Author
-		.findByIdAndUpdate(authorid, updatedAuthor, {})
+		.findByIdAndUpdate(authorid, updatedAuthor, { runValidators: true })
 		.exec((err, author) => {
 			if (err) {
 				res.json({ success: false, message: 'Failed to update the author data, please try again.', results: err });
