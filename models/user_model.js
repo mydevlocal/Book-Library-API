@@ -8,10 +8,8 @@ const UserSchema = new Schema({
 	fullname: { type: String },
 	email: { type: String },
 	address: { type: String },
-	phone_number: { type: Number },
-	createdAt: { type: Date, default: Date.now() },
-	updatedAt: { type: Date, default: Date.now() }
-});
+	phone_number: { type: Number }
+}, { timestamps: true });
 
 // generating a hash
 UserSchema.methods.encryptPassword = function(password) {

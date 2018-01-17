@@ -7,9 +7,7 @@ const BookSchema = new Schema({
 	category: { type: mongoose.Schema.ObjectId, ref: 'Category' },
 	pages: { type: Number },
 	author: { type: mongoose.Schema.ObjectId, ref: 'Author' },
-	published: { type: Date, required: true },
-	createdAt: { type: Date, default: Date.now() },
-	updatedAt: { type: Date, default: Date.now() }
-});
+	published: { type: Date, required: true }
+}, { timestamps: true });
 
 module.exports = mongoose.model('Book', BookSchema);
