@@ -69,7 +69,7 @@ router.put('/authors/:authorid', isVerified, (req, res, next) => {
 			if (err) {
 				res.json({ success: false, message: 'Failed to update the author data, please try again.', results: err });
 			} else {
-				res.json({ success: true, message: 'New author\'s data has been saved.', results: author });
+				res.json({ success: true, message: 'New author\'s data has been saved.', results: updatedAuthor });
 			}
 		});
 });
