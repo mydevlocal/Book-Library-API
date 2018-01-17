@@ -20,7 +20,14 @@ mongoose.Promise = global.Promise;
 
 // set up middlewares
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+	origin: true,
+	methods: ['PUT', 'GET', 'POST', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization'],
+	preflighContinues: true,
+	credentials: true
+}));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
