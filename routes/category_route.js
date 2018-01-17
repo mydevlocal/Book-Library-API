@@ -53,15 +53,13 @@ router.post('/categories', isVerified, (req, res, next) => {
 router.put('/categories/:categoryid', isVerified, (req, res, next) => {
 	const categoryid    = req.params.categoryid;
 	const category_name = req.body.category_name;
-	const updatedAt     = Date.Now();
 
 	let updatedCategory = new Category();
 
 	updatedCategory.category_name = category_name;
-	updatedCategory.updatedAt     = updatedAt;
 
 	Category
-		.findByIdAndUpdate(categoryid, updatedCategory, {})
+		.findByIdAndUpdate(categoryid, updatedCategory, { runValidators: true })
 		.exec((err, category) => {
 			if (err) {
 				res.json({ success: false, message: 'Failed to update the category data, please try again.', results: err });
