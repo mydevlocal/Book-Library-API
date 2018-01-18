@@ -87,10 +87,10 @@ router.put('/books/:bookid', isVerified, (req, res, next) => {
 
 // == delete a spesific book ==
 router.delete('/books/:bookid', isVerified, (req, res, next) => {
-	const bookid = req.params.id;
+	const bookid = req.params.bookid;
 
 	Book
-		.findByIdAndRemove(bookid)
+		.findByIdAndRemove({ '_id': bookid })
 		.exec((err, book) => {
 			if (err) {
 				res.json({ success: false, message: `A book with id: ${bookid} cannot be found or delete, please try again.`});

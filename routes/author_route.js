@@ -76,10 +76,10 @@ router.put('/authors/:authorid', isVerified, (req, res, next) => {
 
 // == delete a spesific author ==
 router.delete('/authors/:authorid', isVerified, (req, res, next) => {
-	const authorid = req.params.id;
+	const authorid = req.params.authorid;
 
 	Author
-		.findByIdAndRemove(authorid)
+		.findByIdAndRemove({ '_id': authorid })
 		.exec((err, author) => {
 			if (err) {
 				res.json({ success: false, message: `An author with id: ${authorid} cannot be found or delete, please try again.`});

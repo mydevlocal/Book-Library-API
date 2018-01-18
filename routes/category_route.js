@@ -57,6 +57,7 @@ router.put('/categories/:categoryid', isVerified, (req, res, next) => {
 	let updatedCategory = new Category();
 
 	updatedCategory.category_name = category_name;
+	updatedCategory._id           = categoryid;
 
 	Category
 		.findByIdAndUpdate(categoryid, updatedCategory, { runValidators: true })
@@ -64,17 +65,17 @@ router.put('/categories/:categoryid', isVerified, (req, res, next) => {
 			if (err) {
 				res.json({ success: false, message: 'Failed to update the category data, please try again.', results: err });
 			} else {
-				res.json({ success: true, message: 'New category\'s data has been saved.', results: category });
+				res.json({ success: true, message: 'New category data has been saved.', results: updatedCategory });
 			}
 		});
 });
 
 // == delete a spesific category ==
 router.delete('/categories/:categoryid', isVerified, (req, res, next) => {
-	const categoryid = req.params.id;
+	const categoryid = req.params.categoryid;
 
 	Category
-		.findByIdAndRemove(categoryid)
+		.findByIdAndRemove({ '_id': categoryid })
 		.exec((err, category) => {
 			if (err) {
 				res.json({ success: false, message: `A category with id: ${categoryid} cannot be found or delete, please try again.`});
