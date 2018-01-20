@@ -7,29 +7,56 @@ const Author     = require('../models/author_model');
 
 // == find all authors ==
 router.get('/authors', isVerified, (req, res, next) => {
-	Author
-		.find({})
-		.exec((err, results) => {
-			if (err) {
+	let offset = req.query.offset ? parseInt(req.query.offset, 10) : null;
+	let limit  = parseInt(req.query.limit);
+	let total;
+
+	if (offset !== null) {
+		Author
+			.count({})
+			.then(count => {
+				// intialize total authors
+				total = count;
+
+				// then return authors data
+				return Author
+								.find({})
+								.sort({ fullname: 1 })
+								.skip(offset)
+								.limit(limit)
+								.exec();
+			})
+			.then(results => {
+				res.status(200).json({ success: true, message: 'All authors are available.', results: results, limit: limit, total: total });
+			})
+			.catch(err => {
 				res.json({ success: false, message: 'Failed to show authors data, please try again.', results: err });
-			} else {
+			});
+	} else {
+		// if there is no query string, get all authors 
+		Author
+			.find({})
+			.then(results => {
 				res.status(200).json({ success: true, message: 'All authors are available.', results: results });
-			}
-		});
+			})
+			.catch(err => {
+				res.json({ success: false, message: 'Failed to show authors data, please try again.', results: err });
+			});
+	}
 });
 
-// == find aouthor by its id ==
+// == find author by id ==
 router.get('/authors/:authorid', isVerified, (req, res, next) => {
 	const authorid = req.params.authorid;
 
+	// find author by the id of author
 	Author
-		.findById({ '_id': req.params.authorid })
-		.exec((err, author) => {
-			if (err) {
-				res.json({ success: false, message: `Oops, an author with id: ${authorid} cannot be found, please try again.`});
-			} else {
-				res.status(200).json({ success: true, message: `Author with id: ${authorid} is found.`, results: author});
-			}
+		.findById({ '_id': authorid })
+		.then(author => {
+			res.status(200).json({ success: true, message: `Author with id: ${authorid} is found.`, results: author});
+		})
+		.catch(err => {
+			res.json({ success: false, message: `Oops, an author with id: ${authorid} cannot be found, please try again.`});
 		});
 });
 
@@ -42,13 +69,17 @@ router.post('/authors', isVerified, (req, res, next) => {
 
 	newAuthor.fullname = fullname;
 	newAuthor.email    = email;
-	newAuthor.save((err, author) => {
-		if (err) {
-			res.json({ success: false, message: 'New author data cannot be save, please try again.', results: err });
-		} else {
+
+	// insert new author to the database. No validation? soon :)
+	// i can use client-side validation instead :D
+	newAuthor
+		.save()
+		.then(author => {
 			res.status(201).json({ success: true, message: 'New author successfully saved.', results: author });
-		}
-	});
+		})
+		.catch(err => {
+			res.json({ success: false, message: 'New author data cannot be save, please try again.', results: err });
+		});
 });
 
 // == edit a spesific author ==
@@ -63,14 +94,15 @@ router.put('/authors/:authorid', isVerified, (req, res, next) => {
 	updatedAuthor.email     = email;
 	updatedAuthor._id       = authorid;
 
+	// To update the author, 'authorid' is absolutely required
+	// and 'runValidators' will help to check the schema
 	Author
 		.findByIdAndUpdate(authorid, updatedAuthor, { runValidators: true })
-		.exec((err, author) => {
-			if (err) {
-				res.json({ success: false, message: 'Failed to update the author data, please try again.', results: err });
-			} else {
-				res.json({ success: true, message: 'New author\'s data has been saved.', results: updatedAuthor });
-			}
+		.then(updatedAuthor => {
+			res.json({ success: true, message: 'New author\'s data has been saved.', results: updatedAuthor });
+		})
+		.catch(err => {
+			res.json({ success: false, message: 'Failed to update the author data, please try again.', results: err });	
 		});
 });
 
@@ -78,14 +110,15 @@ router.put('/authors/:authorid', isVerified, (req, res, next) => {
 router.delete('/authors/:authorid', isVerified, (req, res, next) => {
 	const authorid = req.params.authorid;
 
+	// nothing special here, just remove the existing document
+	// by a spesific 'authorid'
 	Author
 		.findByIdAndRemove({ '_id': authorid })
-		.exec((err, author) => {
-			if (err) {
-				res.json({ success: false, message: `An author with id: ${authorid} cannot be found or delete, please try again.`});
-			} else {
-				res.status(204).json({ success: true, message: 'The author successfully deleted.' });
-			}
+		.then(author => {
+			res.status(204).json({ success: true });
+		})
+		.catch(err => {
+			res.json({ success: false, message: `An author with id: ${authorid} cannot be found or delete, please try again.`});
 		});
 });
 
