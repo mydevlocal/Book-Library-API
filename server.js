@@ -15,8 +15,14 @@ const host = process.env.HOST || 'localhost';
 
 const app = express();
 
+//Set up default mongoose connection
 mongoose.connect(opts.mongodb.dbURL, opts.mongodb.dbOptions);
+// Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
+//Get the default connection
+const db         = mongoose.connection;
+//Bind connection to error event (to get notification of connection errors)
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // set up middlewares
 app.use(helmet());
