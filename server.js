@@ -10,8 +10,8 @@ const Category = require('./routes/category_route');
 const Book     = require('./routes/book_route');
 const opts     = require('./config/options');
 
-const port = process.env.PORT || 3000;
-const host = process.env.HOST || 'localhost';
+const port = process.env.PORT;
+const host = process.env.HOST;
 
 const app = express();
 
