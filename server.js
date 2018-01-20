@@ -15,7 +15,7 @@ const host = process.env.HOST || 'localhost';
 
 const app = express();
 
-mongoose.connect(opts.mongodb.dbURL, opts.mongodb.dbOptions);
+mongoose.connect(opts.mongodb.dbURL, opts.mongodb.dbOptions, (err) => { throw new Error(err); });
 mongoose.Promise = global.Promise;
 
 // set up middlewares
