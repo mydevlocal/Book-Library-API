@@ -12,28 +12,31 @@ router.post('/signup', (req, res, next) => {
 	let password     = req.body.password;
 
 	User
-		.findOne({ 'username': username }, (err, user) => {
-			if (err) {
-				return next(new Error('Error when trying to find existing user!'));
-			}
-
+		.findOne({ 'username': username })
+		.then(user => {
 			// if user found return immediately, else create a new user
 			if (user) {
 				res.json({ success: false, message: 'Username is already taken' });
 			} else {
 				let createUser = new User();
 
+				// use 'encryptPassword' schema method to hash user password
 				createUser.username  = username;
 				createUser.password  = createUser.encryptPassword(password);
 
-				createUser.save((err, result) => {
-					if (err) {
-						return next(new Error('Failed to create a new user!'));
-					} else {
+				// insert new user to database
+				createUser
+					.save()
+					.then(result => {
 						res.status(201).json({ success: true, message: 'Successful create a new user.' });
-					}
-				});
-			}
+					})
+					.catch(err => {
+						return next(new Error('Failed to create a new user!', err));
+					});
+			}			
+		})
+		.catch(err => {
+			return next(new Error('Error when trying to find existing user!', err));
 		});
 });
 
@@ -43,21 +46,19 @@ router.post('/signin', (req, res, next) => {
 	let password = req.body.password || '';
 
 	User
-		.findOne({ 'username': username }, (err, user) => {
-			if (err) {
-				return next(new Error('Error when trying to signin!'));
-			}
-
+		.findOne({ 'username': username })
+		.then(user => {
 			if (!user) {
-				res.status(401).json({ success: false, message: 'No such user found.'});
+				res.status(401).json({ success: false, message: 'Invalid username, please try again.'});
 			}
 
 			if(!user.comparePassword(password)) {
 				res.status(401).json({ success: false, message: 'Password didn\'t match.'});
 			} else {
-				// everything passed
+				// everything passed, set user id as payload
 				let payload = { id: user._id };
 
+				// sign the token, make it to expiresIn 3 days
 				jwt.sign(payload, opts.jwtSecret.tokenKey, { expiresIn: '3d' }, (err, token) => {
 					if (err) {
 						res.status(401).json({ success: false, message: 'Cannot proceed the signature, please try again', error: err });
@@ -65,7 +66,10 @@ router.post('/signin', (req, res, next) => {
 						res.json({ success: true, message: 'Login success, get your token', token: token });
 					}
 				});
-			}
+			}			
+		})
+		.catch(err => {
+			return next(new Error('Error when trying to signin!'));
 		});
 });
 
