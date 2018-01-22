@@ -1,5 +1,5 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const jwt     = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -31,27 +31,24 @@ router.post('/signup', (req, res, next) => {
 						res.status(201).json({ success: true, message: 'Successful create a new user.' });
 					})
 					.catch(err => {
-						return next(new Error('Failed to create a new user!', err));
+						res.status(500).json({ success: false, message: 'Unable to create new user.' });
 					});
 			}			
 		})
 		.catch(err => {
-			return next(new Error('Error when trying to find existing user!', err));
+			res.status(500).json({ success: false, message: 'Cannot proceed your registration data, please try again.' });
 		});
 });
 
 // == signin to get a token to use the api ==
 router.post('/signin', (req, res, next) => {
 	let username = req.body.username;
-	let password = req.body.password || '';
+	let password = req.body.password;
 
 	User
 		.findOne({ 'username': username })
 		.then(user => {
-			if (!user) {
-				res.status(401).json({ success: false, message: 'Invalid username, please try again.'});
-			}
-
+			// check entered user password
 			if(!user.comparePassword(password)) {
 				res.status(401).json({ success: false, message: 'Password didn\'t match.'});
 			} else {
@@ -69,7 +66,7 @@ router.post('/signin', (req, res, next) => {
 			}			
 		})
 		.catch(err => {
-			return next(new Error('Error when trying to signin!'));
+			res.status(401).json({ success: false, message: 'Invalid username, please try again.'});
 		});
 });
 
