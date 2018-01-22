@@ -3,7 +3,6 @@ const helmet     = require('helmet');
 const cors       = require('cors');
 const bodyParser = require('body-parser');
 const mongoose   = require('mongoose');
-const bunyan		 = require('bunyan');
 
 const User     = require('./routes/user_route');
 const Author   = require('./routes/author_route');
@@ -23,35 +22,8 @@ const app = express();
 mongoose.connect(opts.mongodb.dbURL, opts.mongodb.dbOptions);
 mongoose.Promise = global.Promise;
 const db         = mongoose.connection;
-
-// Set up mongodb connection log info into a file
-let mongoLog = bunyan.createLogger({
-  name: 'mongodb-connection-log',
-  streams: [
-    {
-      level: 'info',
-      path: __dirname + '/logs/mongodb-connection.log'
-    }
-  ]
-});
-db.on('error', (err) => mongoLog.info(err));
-
-// Set up app log for tracking error and info into file
-let log = bunyan.createLogger({
-  name: 'book-library-log',
-  streams: [
-    {
-      level: 'info',
-      path: __dirname + '/logs/error.log'
-    },
-    {
-      level: 'error',
-      path: __dirname + '/logs/error.log' 
-    }
-  ]
-});
-log.info();
-log.error();
+//Bind connection to error event (to get notification of connection errors)
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // set up middlewares
 app.use(helmet());
