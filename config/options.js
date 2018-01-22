@@ -1,6 +1,6 @@
 module.exports = {
 	mongodb: {
-		dbURL: process.env.MONGO_URL,
+		dbURL: process.env.MONGODB_URI,
 		dbOptions: {
 			useMongoClient: true,
 			reconnectTries: Number.MAX_VALUE,
