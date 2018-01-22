@@ -8,14 +8,14 @@ const Author     = require('../models/author_model');
 // == find all authors ==
 router.get('/authors', isVerified, (req, res, next) => {
 	let offset = req.query.offset ? parseInt(req.query.offset, 10) : null;
-	let limit  = parseInt(req.query.limit);
+	let limit  = req.query.limit ? parseInt(req.query.limit, 10) : null;
 	let total;
 
 	if (offset !== null) {
 		Author
 			.count({})
 			.then(count => {
-				// intialize total authors
+				// initialize total authors
 				total = count;
 
 				// then return authors data
