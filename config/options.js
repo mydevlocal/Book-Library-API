@@ -1,6 +1,6 @@
 module.exports = {
 	mongodb: {
-		dbURL: 'mongodb://localhost:27017/dev-restapi',
+		dbURL: process.env.MONGO_URL,
 		dbOptions: {
 			useMongoClient: true,
 			reconnectTries: Number.MAX_VALUE,
@@ -9,5 +9,5 @@ module.exports = {
 			bufferMaxEntries: 0
 		}
 	},
-	jwtSecret: { tokenKey: 'lkd(*#jLASE340KADl@(nlkSF09aJs' }
+	jwtSecret: { tokenKey: process.env.JWT_TOKEN }
 };
