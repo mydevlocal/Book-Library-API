@@ -9,27 +9,26 @@ const Category   = require('../models/category_model');
 router.get('/categories', isVerified, (req, res, next) => {
 	Category
 		.find({})
-		.exec((err, results) => {
-			if (err) {
-				res.json({ success: false, message: 'Failed to show categories data, please try again.', results: err });
-			} else {
-				res.status(200).json({ success: true, message: 'All categories are available.', results: results });
-			}
+		.then(results => {
+			res.status(200).json({ success: true, message: 'All categories are available.', results: results });
+		})
+		.catch(err => {
+			res.json({ success: false, message: 'Failed to show categories data, please try again.', results: err });
 		});
 });
 
-// == find category by its id ==
+// == find category by id ==
 router.get('/categories/:categoryid', isVerified, (req, res, next) => {
 	const categoryid = req.params.categoryid;
 
+	// find category by the id of category
 	Category
-		.findById({ '_id': req.params.categoryid })
-		.exec((err, category) => {
-			if (err) {
-				res.json({ success: false, message: `Oops, a category with id: ${categoryid} cannot be found, please try again.`});
-			} else {
-				res.status(200).json({ success: true, message: `Category with id: ${categoryid} is found.`, results: category});
-			}
+		.findById({ '_id': categoryid })
+		.then(category => {
+			res.status(200).json({ success: true, message: `Category with id: ${categoryid} is found.`, results: category});
+		})
+		.catch(err => {
+			res.json({ success: false, message: `Oops, a category with id: ${categoryid} cannot be found, please try again.`});
 		});
 });
 
@@ -40,13 +39,17 @@ router.post('/categories', isVerified, (req, res, next) => {
 	let newCategory = new Category();
 
 	newCategory.category_name = category_name;
-	newCategory.save((err, category) => {
-		if (err) {
-			res.json({ success: false, message: 'New category data cannot be save, please try again.', results: err });
-		} else {
+
+	// insert new category to the database. No validation? soon :)
+	// i can use client-side validation instead :D
+	newCategory
+		.save()
+		.then(category => {
 			res.status(201).json({ success: true, message: 'New category successfully saved.', results: category });
-		}
-	});
+		})
+		.catch(err => {
+			res.json({ success: false, message: 'New category data cannot be save, please try again.', results: err });
+		});
 });
 
 // == edit a spesific category ==
@@ -59,14 +62,15 @@ router.put('/categories/:categoryid', isVerified, (req, res, next) => {
 	updatedCategory.category_name = category_name;
 	updatedCategory._id           = categoryid;
 
+	// To update the category, 'categoryid' is absolutely required
+	// and 'runValidators' will help to check the schema
 	Category
 		.findByIdAndUpdate(categoryid, updatedCategory, { runValidators: true })
-		.exec((err, category) => {
-			if (err) {
-				res.json({ success: false, message: 'Failed to update the category data, please try again.', results: err });
-			} else {
-				res.json({ success: true, message: 'New category data has been saved.', results: updatedCategory });
-			}
+		.then(updatedCategory => {
+			res.json({ success: true, message: 'New category data has been saved.', results: updatedCategory });
+		})
+		.catch(err => {
+			res.json({ success: false, message: 'Failed to update the category data, please try again.', results: err });
 		});
 });
 
@@ -74,14 +78,15 @@ router.put('/categories/:categoryid', isVerified, (req, res, next) => {
 router.delete('/categories/:categoryid', isVerified, (req, res, next) => {
 	const categoryid = req.params.categoryid;
 
+	// nothing special here, just remove the existing document
+	// by a specific 'categoryid'
 	Category
 		.findByIdAndRemove({ '_id': categoryid })
-		.exec((err, category) => {
-			if (err) {
-				res.json({ success: false, message: `A category with id: ${categoryid} cannot be found or delete, please try again.`});
-			} else {
-				res.status(204).json({ success: true, message: 'The category successfully deleted.' });
-			}
+		.then(category => {
+			res.status(204).json({ success: true });
+		})
+		.catch(err => {
+			res.json({ success: false, message: `A category with id: ${categoryid} cannot be found or delete, please try again.`});
 		});
 });
 
