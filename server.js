@@ -1,4 +1,5 @@
 const express    = require('express');
+const path       = require('path');
 const helmet     = require('helmet');
 const cors       = require('cors');
 const bodyParser = require('body-parser');
@@ -39,6 +40,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // set up routes
+app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/api/v1', User);
 app.use('/api/v1', Author);
 app.use('/api/v1', Category);
