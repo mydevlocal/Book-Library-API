@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=11' />
+    <title>Books Library API Documentation</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='css/base.css' rel='stylesheet' />
+    <link href='css/style.css' rel='stylesheet' />
+    <link href='css/railscasts.css' rel='stylesheet' />
+  </head>
+  <body>
+    <!--START--><div id='app'><div class="container unlimiter" data-reactroot="" data-reactid="1" data-react-checksum="1341335414"><div class="fixed-top fixed-right space-left16" data-reactid="2"><div class="fill-light col6 pin-right" data-reactid="3"></div></div><div class="space-top5 scroll-styled overflow-auto pad1 width16 sidebar fixed-left fill-dark dark" data-reactid="4"><div class="pad0x small" data-reactid="5"><div class="small pad0x quiet space-top1" data-reactid="6">Getting Started</div><a href="#introduction" class="line-height15 pad0x pad00y quiet block " data-reactid="7">Introduction</a><div class="small pad0x quiet space-top1" data-reactid="8">User Access</div><div class="small pad0x quiet space-top1" data-reactid="9">Author API</div><div class="small pad0x quiet space-top1" data-reactid="10">Category API</div></div></div><div class="space-left16" data-reactid="11"><div class="" data-reactid="12"><div class="clearfix" data-reactid="13"><div data-title="Introduction" class="keyline-top section contain clearfix " data-reactid="14"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="15"><h2 id="introduction">Introduction</h2>
+<p>This documentation
+is generated from normal Markdown files using <a href="https://github.com/tmcw/docbox">docbox</a>, please check it for more details.</p>
+<p>To access this API, a token should be provided. It can be use as <code>req.body.token</code> and also query string <code>endpoint/?token=your_token</code> or even with headers request. </p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="16"><h4 id="access-token-example">Access token example</h4>
+<pre class='hljs'>https:<span class="hljs-comment">//domain.com/{endpoint}?token=your-access-token</span></pre>
+<pre class='hljs'><span class="hljs-keyword">const</span> Authorization = your-access-token;
+axios.get(<span class="hljs-string">'endpoint'</span>, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<pre class='hljs'>axios.post(<span class="hljs-string">'endpoint'</span>, {
+    <span class="hljs-attr">token</span>: your-token-access
+  })
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="unverified-token-response">Unverified token response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"No token provided!"</span>
+}</pre>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Failed to authenticate the token!"</span>,
+  <span class="hljs-attr">"error"</span>: {
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"JsonWebTokenError"</span>,
+    <span class="hljs-attr">"message"</span>: <span class="hljs-string">"invalid signature"</span>
+  }
+}</pre>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Failed to authenticate the token!"</span>,
+  <span class="hljs-attr">"error"</span>: {
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"TokenExpiredError"</span>,
+    <span class="hljs-attr">"message"</span>: <span class="hljs-string">"jwt expired"</span>,
+    <span class="hljs-attr">"expiredAt"</span>: <span class="hljs-string">"2018-01-14T04:06:28.000Z"</span>
+  }
+}</pre>
+<h4 id="http-response">HTTP Response</h4>
+<pre class='hljs'>HTTP 401</pre>
+<h4 id="wrong-endpoint-example-response">Wrong endpoint example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"No routes Found!"</span>,
+  <span class="hljs-attr">"error"</span>: {
+    <span class="hljs-attr">"status"</span>: <span class="hljs-number">404</span>
+  }
+}</pre>
+<h4 id="http-response-1">HTTP Response</h4>
+<pre class='hljs'>HTTP 404</pre>
+</div></div><div data-title="Sign Up" class="keyline-top section contain clearfix " data-reactid="17"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="18"><h3 id="sign-up">Sign Up</h3>
+<p>A user must be have a token to use the API, and to get one they should registered on database. Use the signup endpoint to registered and signin to get access token. A token will expired in 3 days.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>username</code></td>
+<td>Use a uniques username</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>Any string is acceptable, and it'll encrypt with bcrypt package</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="19"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/signup</div>
+    </div>
+<h4 id="example-request">Example request</h4>
+<pre class='hljs'>axios.post(<span class="hljs-string">'endpoint'</span>, {
+    <span class="hljs-attr">username</span>: <span class="hljs-string">"Doe"</span>,
+    <span class="hljs-attr">password</span>: <span class="hljs-string">"1234"</span>
+  })
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Successful create a new user."</span>
+}</pre>
+<h4 id="http-response-2">HTTP Response</h4>
+<pre class='hljs'>HTTP 201</pre>
+<h4 id="failed-to-sign-up-example-response">Failed to Sign Up example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Username is already taken"</span>
+}</pre>
+</div></div><div data-title="Sign In" class="keyline-top section contain clearfix " data-reactid="20"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="21"><h3 id="sign-in">Sign In</h3>
+<p>After Sign in, you'll get the token provided by <code>token</code> key object on ajax response. Remember, this token will be expired in 3 days since you loggedin.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>username</code></td>
+<td>Your unique username</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>Your password (it'll decrypted on server)</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="22"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/signin</div>
+    </div>
+<h4 id="example-request-1">Example request</h4>
+<pre class='hljs'>axios.post(<span class="hljs-string">'endpoint'</span>, {
+    <span class="hljs-attr">username</span>: <span class="hljs-string">"Doe"</span>,
+    <span class="hljs-attr">password</span>: <span class="hljs-string">"1234"</span>
+  })
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-success-response">Example success response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Login success, get your token"</span>,
+  <span class="hljs-attr">"token"</span>: <span class="hljs-string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhNTgyMzhiZWEzOWZmMTU4ODhhNDQxZCIsImlhdCI6MTUxNTcyNzE1MiwiZXhwIjoxNTE1OTg2MzUyfQ.0rivdIvqPvC-WBOUuPTvmwdFZB0HQZE65vYoaTGoyrU"</span>
+}</pre>
+<h4 id="http-response-3">HTTP Response</h4>
+<pre class='hljs'>HTTP 200</pre>
+<h4 id="wrong-username-response">Wrong username response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"No such user found."</span>
+}</pre>
+<h4 id="wrong-password-response">Wrong password response</h4>
+<pre class='hljs'>{
+    <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Password didn't match."</span>
+}</pre>
+<h4 id="http-response-4">HTTP Response</h4>
+<pre class='hljs'>HTTP 401</pre>
+</div></div><div data-title="Sign Out" class="keyline-top section contain clearfix " data-reactid="23"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="24"><h3 id="sign-out">Sign Out</h3>
+<p>It'll be available soon.</p>
+</div></div><div data-title="Get Authors" class="keyline-top section contain clearfix " data-reactid="25"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="26"><h3 id="get-authors">Get Authors</h3>
+<p>Retrieve all Authors data</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="27"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/authors</div>
+    </div>
+<div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/authors?limit=10&ffset=0</div>
+    </div>
+<h4 id="example-request-2">Example request</h4>
+<pre class='hljs'>axios.get(<span class="hljs-string">'endpoint'</span>, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response-1">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"All authors are available."</span>,
+  <span class="hljs-attr">"results"</span>: [
+    {
+      <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a56e602e22d712e741456fd"</span>,
+      <span class="hljs-attr">"email"</span>: <span class="hljs-string">"contact@teresadriscoll.com"</span>,
+      <span class="hljs-attr">"fullname"</span>: <span class="hljs-string">"Teresa Driscoll"</span>,
+      <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>,
+      <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-11T04:20:15.590Z"</span>,
+      <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-11T04:20:15.590Z"</span>
+    },
+    {
+      <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a56e865d80ed230a66ba00d"</span>,
+      <span class="hljs-attr">"email"</span>: <span class="hljs-string">"danielle.steel@gmail.com"</span>,
+      <span class="hljs-attr">"fullname"</span>: <span class="hljs-string">"Danielle Steel"</span>,
+      <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>,
+      <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.457Z"</span>,
+      <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.457Z"</span>
+    }
+  ]
+}</pre>
+<h4 id="query-string-example-response">Query string example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"All authors are available."</span>,
+  <span class="hljs-attr">"results"</span>: [
+    {
+      <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a5704e0f086910c55bbbbaa"</span>,
+      <span class="hljs-attr">"email"</span>: <span class="hljs-string">"contact@authoramyharmon.com"</span>,
+      <span class="hljs-attr">"fullname"</span>: <span class="hljs-string">"Amy Harmon"</span>,
+      <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-11T06:24:05.934Z"</span>,
+      <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-11T06:24:05.934Z"</span>,
+      <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>
+    },
+    {
+      <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a56e865d80ed230a66ba00d"</span>,
+      <span class="hljs-attr">"email"</span>: <span class="hljs-string">"danielle.steel@gmail.com"</span>,
+      <span class="hljs-attr">"fullname"</span>: <span class="hljs-string">"Danielle Steel"</span>,
+      <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.457Z"</span>,
+      <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.457Z"</span>,
+      <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>
+    }
+  ],
+  <span class="hljs-attr">"limit"</span>: <span class="hljs-number">10</span>,
+  <span class="hljs-attr">"total"</span>: <span class="hljs-number">2</span>
+}</pre>
+<h4 id="http-response-5">HTTP Response</h4>
+<pre class='hljs'> HTTP 200</pre>
+</div></div><div data-title="Add an Author" class="keyline-top section contain clearfix " data-reactid="28"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="29"><h3 id="add-an-author">Add an Author</h3>
+<p>Creates a new Author.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fullname</code></td>
+<td>The fullname of the Author</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>The email of the Author</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="30"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/authors</div>
+    </div>
+<h4 id="example-request-3">Example request</h4>
+<pre class='hljs'>axios.post(<span class="hljs-string">'endpoint'</span>, {
+    <span class="hljs-attr">fullname</span>: <span class="hljs-string">'Kerry Lonsdale'</span>,
+    <span class="hljs-attr">email</span>: <span class="hljs-string">'contact@kerrylonsdale'</span>,
+  }, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response-2">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"New author successfully saved."</span>,
+  <span class="hljs-attr">"results"</span>: {
+    <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"email"</span>: <span class="hljs-string">"contact@kerrylonsdale.com"</span>,
+    <span class="hljs-attr">"fullname"</span>: <span class="hljs-string">"Kerry Lonsdale"</span>,
+    <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a582e8bd0a3cf239fd66a86"</span>,
+    <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-12T03:22:47.843Z"</span>,
+    <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-12T03:22:47.843Z"</span>
+  }
+}</pre>
+<h4 id="http-response-6">HTTP Response</h4>
+<pre class='hljs'>HTTP 201</pre>
+</div></div><div data-title="Retrieve an Author" class="keyline-top section contain clearfix " data-reactid="31"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="32"><h3 id="retrieve-an-author">Retrieve an Author</h3>
+<p>Returns a single Author.</p>
+<p>Retrieve information about an existing author.</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="33"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/authors/<span class="strong">{authorid}</span></div>
+    </div>
+<h4 id="example-request-4">Example request</h4>
+<pre class='hljs'>axios.get(<span class="hljs-string">'endpoint'</span>, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response-3">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Author with id: 5a582e8bd0a3cf239fd66a86 is found."</span>,
+  <span class="hljs-attr">"results"</span>: {
+    <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a582e8bd0a3cf239fd66a86"</span>,
+    <span class="hljs-attr">"email"</span>: <span class="hljs-string">"contact@kerrylonsdale.com"</span>,
+    <span class="hljs-attr">"fullname"</span>: <span class="hljs-string">"Kerry Lonsdale"</span>,
+    <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-12T03:22:47.843Z"</span>,
+    <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-12T03:22:47.843Z"</span>
+  }
+}</pre>
+<h4 id="wrong-authorid">Wrong authorid</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Oops, an author with id: 1234 cannot be found, please try again."</span>
+}</pre>
+<h4 id="http-response-7">HTTP Response</h4>
+<pre class='hljs'>HTTP 200</pre>
+</div></div><div data-title="Update an Author" class="keyline-top section contain clearfix " data-reactid="34"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="35"><h3 id="update-an-author">Update an Author</h3>
+<p>Updates the properties of a particular author.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fullname</code></td>
+<td>The fullname of the Author</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>The email of the Author</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="36"><h4 id="endpoint">Endpoint</h4>
+<div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/authors/<span class="strong">{authorid}</span></div>
+    </div>
+<h4 id="example-request-5">Example request</h4>
+<pre class='hljs'><span class="hljs-keyword">let</span> body = {
+  <span class="hljs-string">"email"</span>: <span class="hljs-string">"kerry@kerrylonsdale.com"</span>
+};
+axios.put(<span class="hljs-string">'endpoint'</span>, body, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response-4">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"New author's data has been saved."</span>,
+  <span class="hljs-attr">"results"</span>: {
+    <span class="hljs-attr">"email"</span>: <span class="hljs-string">"kerry@kerrylonsdale.com"</span>,
+    <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a582e8bd0a3cf239fd66a86"</span>
+  }
+}</pre>
+<h4 id="error-response">Error response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Failed to update the author data, please try again."</span>,
+  <span class="hljs-attr">"results"</span>: {
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"MongoError"</span>,
+    <span class="hljs-attr">"message"</span>: <span class="hljs-string">"After applying the update, the (immutable) field '_id' was found to have been altered to _id: ObjectId('5a5834da4a5656355f4f1b75')"</span>,
+    <span class="hljs-attr">"ok"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"errmsg"</span>: <span class="hljs-string">"After applying the update, the (immutable) field '_id' was found to have been altered to _id: ObjectId('5a5834da4a5656355f4f1b75')"</span>,
+    <span class="hljs-attr">"code"</span>: <span class="hljs-number">66</span>,
+    <span class="hljs-attr">"codeName"</span>: <span class="hljs-string">"ImmutableField"</span>
+  }
+}</pre>
+<h4 id="http-response-8">HTTP Response</h4>
+<pre class='hljs'>HTTP 200</pre>
+</div></div><div data-title="Delete an Author" class="keyline-top section contain clearfix " data-reactid="37"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="38"><h3 id="delete-an-author">Delete an Author</h3>
+<p>Deletes an existing Author.</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="39"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/author/<span class="strong">{authorid}</span></div>
+    </div>
+<h4 id="example-request-6">Example request</h4>
+<pre class='hljs'>axios.delete(<span class="hljs-string">'endpoint'</span>, { <span class="hljs-attr">headers</span>: { Authorization }});</pre>
+<h4 id="example-response-5">Example response</h4>
+<pre class='hljs'>HTTP 204</pre>
+</div></div><div data-title="Get Categories" class="keyline-top section contain clearfix " data-reactid="40"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="41"><h3 id="get-categories">Get Categories</h3>
+<p>Retrieve all Categories data</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="42"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/categories</div>
+    </div>
+<h4 id="example-request-7">Example request</h4>
+<pre class='hljs'>axios.get(<span class="hljs-string">'endpoint'</span>, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response-6">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"All categories are available."</span>,
+  <span class="hljs-attr">"results"</span>: [
+    {
+      <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a56e7d7d80ed230a66ba00c"</span>,
+      <span class="hljs-attr">"category_name"</span>: <span class="hljs-string">"Romance"</span>,
+      <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.458Z"</span>,
+      <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.458Z"</span>,
+      <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>
+    },
+    {
+      <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a56e89dd80ed230a66ba00e"</span>,
+      <span class="hljs-attr">"category_name"</span>: <span class="hljs-string">"Programming"</span>,
+      <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.458Z"</span>,
+      <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.458Z"</span>,
+      <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>
+    }
+  ]
+}</pre>
+<h4 id="http-response-9">HTTP Response</h4>
+<pre class='hljs'> HTTP 200</pre>
+</div></div><div data-title="Add a Category" class="keyline-top section contain clearfix " data-reactid="43"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="44"><h3 id="add-a-category">Add a Category</h3>
+<p>Creates a new Category.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>category_name</code></td>
+<td>The name of the Category</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="45"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>POST</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/categories</div>
+    </div>
+<h4 id="example-request-8">Example request</h4>
+<pre class='hljs'>axios.post(<span class="hljs-string">'endpoint'</span>, {
+    <span class="hljs-attr">category_name</span>: <span class="hljs-string">'Comedy'</span>,
+  }, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response-7">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"New category successfully saved."</span>,
+  <span class="hljs-attr">"results"</span>: {
+    <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-17T04:31:58.787Z"</span>,
+    <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-17T04:31:58.787Z"</span>,
+    <span class="hljs-attr">"category_name"</span>: <span class="hljs-string">"Comedy"</span>,
+    <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a5ed1be5726723526cd0022"</span>
+  }
+}</pre>
+<h4 id="http-response-10">HTTP Response</h4>
+<pre class='hljs'>HTTP 201</pre>
+</div></div><div data-title="Retrieve a Category" class="keyline-top section contain clearfix " data-reactid="46"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="47"><h3 id="retrieve-a-category">Retrieve a Category</h3>
+<p>Returns a single Category.</p>
+<p>Retrieve information about an existing category.</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="48"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>GET</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/categories/<span class="strong">{categoryid}</span></div>
+    </div>
+<h4 id="example-request-9">Example request</h4>
+<pre class='hljs'>axios.get(<span class="hljs-string">'endpoint'</span>, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response-8">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Category with id: 5a56e89dd80ed230a66ba00e is found."</span>,
+  <span class="hljs-attr">"results"</span>: {
+    <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a56e89dd80ed230a66ba00e"</span>,
+    <span class="hljs-attr">"category_name"</span>: <span class="hljs-string">"Programming"</span>,
+    <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.458Z"</span>,
+    <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2018-01-11T04:28:03.458Z"</span>,
+    <span class="hljs-attr">"__v"</span>: <span class="hljs-number">0</span>
+  }
+}</pre>
+<h4 id="wrong-categoryid">Wrong categoryid</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"Oops, a category with id: 1234 cannot be found, please try again."</span>
+}</pre>
+<h4 id="http-response-11">HTTP Response</h4>
+<pre class='hljs'>HTTP 200</pre>
+</div></div><div data-title="Update a Category" class="keyline-top section contain clearfix " data-reactid="49"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="50"><h3 id="update-a-category">Update a Category</h3>
+<p>Updates the properties of a particular category.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>category_name</code></td>
+<td>The name of the Category</td>
+</tr>
+</tbody>
+</table>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="51"><h4 id="endpoint-1">Endpoint</h4>
+<div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>PUT</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/categories/<span class="strong">{categoryid}</span></div>
+    </div>
+<h4 id="example-request-10">Example request</h4>
+<pre class='hljs'><span class="hljs-keyword">let</span> body = {
+  <span class="hljs-string">"category_name"</span>: <span class="hljs-string">"Technology"</span>
+};
+axios.put(<span class="hljs-string">'endpoint'</span>, body, { <span class="hljs-attr">headers</span>: { Authorization }})
+  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(res);
+  })
+  .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(err);
+  });</pre>
+<h4 id="example-response-9">Example response</h4>
+<pre class='hljs'>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"message"</span>: <span class="hljs-string">"New category data has been saved."</span>,
+  <span class="hljs-attr">"results"</span>: {
+    <span class="hljs-attr">"category_name"</span>: <span class="hljs-string">"Technology"</span>,
+    <span class="hljs-attr">"_id"</span>: <span class="hljs-string">"5a56e89dd80ed230a66ba00e"</span>
+  }
+}</pre>
+<h4 id="http-response-12">HTTP Response</h4>
+<pre class='hljs'>HTTP 200</pre>
+</div></div><div data-title="Delete a Category" class="keyline-top section contain clearfix " data-reactid="52"><div class="space-bottom8 col6 pad2x prose clip" data-reactid="53"><h3 id="delete-a-category">Delete a Category</h3>
+<p>Deletes an existing Category.</p>
+</div><div class="space-bottom4 col6 pad2 prose clip fill-light space-top5" data-reactid="54"><div class='endpoint dark fill-dark round '>
+      <div class='round-left pad0y pad1x fill-lighten0 code small endpoint-method'>DELETE</div>
+      <div class='pad0 code small endpoint-url'>/api/v1/category/<span class="strong">{categoryid}</span></div>
+    </div>
+<h4 id="example-request-11">Example request</h4>
+<pre class='hljs'>axios.delete(<span class="hljs-string">'endpoint'</span>, { <span class="hljs-attr">headers</span>: { Authorization }});</pre>
+<h4 id="example-response-10">Example response</h4>
+<pre class='hljs'>HTTP 204</pre>
+</div></div></div></div></div><div class="fixed-top space-left16" data-reactid="55"><div class="events fill-light bottom-shadow pad1 col6 pin-topright  " data-reactid="56"><div class="space-right1 small quiet inline" data-reactid="57">Show examples in:</div><div class="rounded-toggle inline short" data-reactid="58"><a class="strong active" data-reactid="59">JS</a></div><div class="fr pad0" data-reactid="60"><a title="Display as 1 column" style="cursor:pointer;" class="icon quiet caret-left pad0 fill-darken0 round" data-reactid="61"></a></div></div></div><div class="fill-dark dark bottom-shadow fixed-top pad0 width16" data-reactid="62"><a href="/" class="active space-top1 space-left1 pin-topleft icon round dark pad0 fill-blue" data-reactid="63"></a><div class="strong small pad0
+          
+          space-left4 line-height15" data-reactid="64">Book Library Documentation</div></div></div></div><!--STOP-->
+    <script src='bundle.js'></script>
+  </body>
+</html>
