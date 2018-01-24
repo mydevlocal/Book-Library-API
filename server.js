@@ -12,7 +12,6 @@ const Book     = require('./routes/book_route');
 const opts     = require('./config/options');
 
 const port = process.env.PORT;
-const host = process.env.HOST;
 
 const app = express();
 
@@ -66,4 +65,4 @@ app.use((err, req, res, next) => {
 });
 
 // launch the server
-app.listen(port, host);
+app.listen(port);
