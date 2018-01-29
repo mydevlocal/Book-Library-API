@@ -9,16 +9,46 @@ const Category   = require('../models/category_model');
 
 // == find all books ==
 router.get('/books', isVerified, (req, res, next) => {
-	Book
-		.find({})
-		.populate('author')
-		.populate('category')
-		.then(results => {
-			res.status(200).json({ success: true, message: 'All books are available.', results: results });
-		})
-		.catch(err => {
-			res.json({ success: false, message: 'Failed to show books data, please try again.', results: err });
-		});
+	let offset = req.query.offset ? parseInt(req.query.offset, 10) : null;
+	let limit  = req.query.limit ? parseInt(req.query.limit, 10) : null;
+	let total;
+
+	if (offset !== null) {
+		Book
+			.count({})
+			.then(count => {
+				// initialize total books
+				total = count;
+
+				// then return books data
+				return Book
+								.find({})
+								.sort({ title: 1 })
+								.populate('author')
+								.populate('category')
+								.skip(offset)
+								.limit(limit)
+								.exec();
+			})
+			.then(results => {
+				res.status(200).json({ success: true, message: 'All books are available.', results: results, limit: limit, total: total });
+			})
+			.catch(err => {
+				res.json({ success: false, message: 'Failed to show books data, please try again.', results: err });				
+			})
+	} else {
+		// if there is no query string, get all books
+		Book
+			.find({})
+			.populate('author')
+			.populate('category')
+			.then(results => {
+				res.status(200).json({ success: true, message: 'All books are available.', results: results });
+			})
+			.catch(err => {
+				res.json({ success: false, message: 'Failed to show books data, please try again.', results: err });
+			});		
+	}
 });
 
 // == find book by id ==
