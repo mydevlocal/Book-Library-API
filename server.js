@@ -51,17 +51,15 @@ let log = bunyan.createLogger({
     }
   ]
 });
-log.info();
-log.error();
 
 // set up middlewares
 app.use(helmet());
 app.use(cors({
-	origin: true,
-	methods: ['PUT', 'GET', 'POST', 'DELETE', 'OPTIONS'],
-	allowedHeaders: ['Content-Type', 'Authorization'],
-	preflighContinues: true,
-	credentials: true
+  origin: true,
+  methods: ['PUT', 'GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflighContinues: true,
+  credentials: true
 }));
 
 app.use(bodyParser.json());
@@ -76,16 +74,18 @@ app.use('/api/v1', Book);
 
 // set up error handling
 app.use((req, res, next) => {
-	let err = new Error('No routes Found!');
-	err.status = 404;
-	next(err);
+  let err = new Error('No routes Found!');
+  err.status = 404;
+  next(err);
 });
 
 if (app.get('env') === 'development') {
-	app.use((err, req, res, next) => {
-		res.status(err.status || 500);
-		res.send({ message: err.message, error: err });
-	});
+  app.use((err, req, res, next) => {
+    res.status(err.status || 500);
+    res.send({ message: err.message, error: err });
+  });
+  log.info();
+  log.error();
 }
 
 app.use((err, req, res, next) => {
