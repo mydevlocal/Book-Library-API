@@ -35,6 +35,7 @@ let mongoLog = bunyan.createLogger({
     }
   ]
 });
+db.on('error', (err) => mongoLog.info(err));
 
 // Set up app log for tracking error and info into file
 let log = bunyan.createLogger({
@@ -83,13 +84,12 @@ if (app.get('env') === 'development') {
     res.status(err.status || 500);
     res.send({ message: err.message, error: err });
   });
-  db.on('error', (err) => mongoLog.info(err));
   log.info();
   log.error();
 }
 
 app.use((err, req, res, next) => {
-  res.status(err.status || 500);
+	res.status(err.status || 500);
 	res.send({ message: err.message, error: {} });
 });
 
