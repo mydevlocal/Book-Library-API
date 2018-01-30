@@ -1,8 +1,20 @@
 language: node_js
 node_js:
-  - "/*"
+  - "node"
+  - "8"
+services:
+  - mongodb
 cache:
   directories:
     - "node_modules"
+env:
+  global:
+    - JWT_TOKEN=randomtoken7582048
+    - MONGODB_URI=mongodb://localhost:27017/db_book
+    - PORT=3356
+  matrix:
+    - NODE_ENV=production
+before_script:
+  - npm install --production
 script:
-  - npm run build-prod
+  - npm run start-prod
