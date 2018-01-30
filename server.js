@@ -95,3 +95,6 @@ app.use((err, req, res, next) => {
 
 // launch the server
 app.listen(port, host);
+
+// exporting the app module
+module.exports = app;
