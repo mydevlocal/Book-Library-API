@@ -15,6 +15,7 @@ env:
   matrix:
     - NODE_ENV=production
 before_script:
+  - mkdir -p logs && touch logs/{mongodb-connection.log,error.log}
   - npm install --production
 script:
   - npm run start-prod
