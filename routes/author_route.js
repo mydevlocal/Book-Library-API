@@ -98,7 +98,7 @@ router.put('/authors/:authorid', isVerified, (req, res, next) => {
 	// and 'runValidators' will help to check the schema
 	Author
 		.findByIdAndUpdate(authorid, updatedAuthor, { runValidators: true })
-		.then(updatedAuthor => {
+		.then(author => {
 			res.json({ success: true, message: 'New author\'s data has been saved.', results: updatedAuthor });
 		})
 		.catch(err => {
