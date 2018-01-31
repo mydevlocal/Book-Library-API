@@ -16,7 +16,7 @@ env:
     - NODE_ENV=production
 before_script:
   - mkdir -p logs && touch logs/{mongodb-connection.log,error.log}
-  - npm install
+  - npm --production=false install
 script:
   - npm start &
   - npm test
