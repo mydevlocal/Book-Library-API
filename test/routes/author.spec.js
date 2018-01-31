@@ -13,21 +13,7 @@ describe('# Testing Author Routes', function() {
 			const db         = mongoose.connection;
 			db.on('error', function(err) { done(err); });
 		});
-
-		// == generate token for testing ==
-		User
-			.findOne({ 'username': 'testing' })
-			.then(user => {
-				let payload = { id: user._id };
-
-				jwt.sign(payload, opts.jwtSecret.tokenKey, { expiresIn: '3d' }, (err, token) => {
-					apiKey = token;
-				});	
-			})
-			.catch(err => {
-				done(err);
-			});
-
+		
 		// == empty the author collection ==
 		Author.remove({}, function(err) {
 			done();
@@ -39,10 +25,23 @@ describe('# Testing Author Routes', function() {
 			email: 'john@johndoe.com'
 		});
 		author.save();
+
+		// == generate token for testing ==
+		User
+			.create({ 'username': 'testing', 'password': 'testing' })
+			.then(function(newUser) {
+				let payload = { id: newUser._id };
+
+				jwt.sign(payload, opts.jwtSecret.tokenKey, { expiresIn: '3d' }, function(err, token) {
+					apiKey = token;
+				});	
+			})
+			.catch(function(err) { done(err); });
 	});
 
-	// == after passing all testing block, stop mongoose connection ==
+	// == after passing all testing block, remove user collection & stop mongoose connection ==
 	after(function(done) {
+		User.remove({});
 		mongoose.connection.close(function() { done(); });
 	});
 
