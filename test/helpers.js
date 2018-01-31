@@ -11,7 +11,6 @@ const chaitHttp = require('chai-http');
 const opts   = require('../config/options');
 const server = require('../server');
 const Author = require('../models/author_model');
-const User   = require('../models/user_model');
 
 // set up global variable
 global.mongoose  = mongoose;
@@ -23,4 +22,3 @@ global.chaitHttp = chaitHttp;
 global.opts      = opts;
 global.server    = server;
 global.Author    = Author;
-global.User      = User;
