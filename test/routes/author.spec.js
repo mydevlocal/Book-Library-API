@@ -15,9 +15,7 @@ describe('# Testing Author Routes', function() {
 		});
 		
 		// == empty the author collection ==
-		Author.remove({}, function(err) {
-			done();
-		});
+		Author.remove({});
 
 		// == save temporary author ==
 		let author = new Author({
@@ -27,22 +25,19 @@ describe('# Testing Author Routes', function() {
 		author.save();
 
 		// == generate token for testing ==
-		User
-			.create({ 'username': 'testing', 'password': 'testing' })
-			.then(function(newUser) {
-				let payload = { id: newUser._id };
+		let payload = { id: 'randomid0989835909' };
 
-				jwt.sign(payload, opts.jwtSecret.tokenKey, { expiresIn: '3d' }, function(err, token) {
-					apiKey = token;
-				});	
-			})
-			.catch(function(err) { done(err); });
+		jwt.sign(payload, opts.jwtSecret.tokenKey, function(err, token) {
+			apiKey = token;
+		});	
+		done();
 	});
 
-	// == after passing all testing block, remove user collection & stop mongoose connection ==
+	// == after passing all testing block, remove all of the collections from temp memory ==
 	after(function(done) {
-		User.remove({});
-		mongoose.connection.close(function() { done(); });
+		mockgoose.helper.reset().then(function() {
+			done();
+		});
 	});
 
 	// == In this test it's expected a author list ==
