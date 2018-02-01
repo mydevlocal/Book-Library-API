@@ -66,7 +66,7 @@ router.put('/categories/:categoryid', isVerified, (req, res, next) => {
 	// and 'runValidators' will help to check the schema
 	Category
 		.findByIdAndUpdate(categoryid, updatedCategory, { runValidators: true })
-		.then(updatedCategory => {
+		.then(category => {
 			res.json({ success: true, message: 'New category data has been saved.', results: updatedCategory });
 		})
 		.catch(err => {
