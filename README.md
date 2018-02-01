@@ -19,6 +19,7 @@ $ export JWT_TOKEN=myrandomtoken01234
 ```
 Note, those variable is available **ONLY** in current active terminal, so you **MUST** run the app in the same terminal, use the following command to run the app:
 ```sh
+$ sudo systemctl start mongodb (just to make sure to start your mongodb)
 $ npm start
 $ npm test  (if you want to run test)
 ```
