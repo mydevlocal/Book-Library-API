@@ -13,7 +13,7 @@ describe('# Testing Category Routes', function() {
 		});
 		
 		// == empty the category collection ==
-		Category.remove({});
+		Category.remove({}).exec();
 
 		// == save temporary category ==
 		Category
@@ -48,21 +48,6 @@ describe('# Testing Category Routes', function() {
 		it('returns a list of categories', function(done) {
 			supertest(server)
 				.get('/api/v1/categories')
-				.set('Authorization', apiKey)
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.end(function(err, res) {
-					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(true);
-					expect(res.body.results).to.be.an('array');
-					done(err);
-				});
-		});
-
-		it('returns a list of categories per limit value (query string use case)', function(done) {
-			supertest(server)
-				.get('/api/v1/categories')
-				.query({ offset: 0, limit: 10 })
 				.set('Authorization', apiKey)
 				.expect('Content-Type', /json/)
 				.expect(200)
