@@ -1,7 +1,5 @@
 'use strict';
 
-chai.use(chaitHttp);
-
 // == run testing for author routes ==
 describe('# Testing Author Routes', function() {
 	// == This function will run before test to clear author collection ==
@@ -18,11 +16,20 @@ describe('# Testing Author Routes', function() {
 		Author.remove({});
 
 		// == save temporary author ==
-		let author = new Author({
-			fullname: 'John Doe',
-			email: 'john@johndoe.com'
-		});
-		author.save();
+		Author
+			.count({})
+			.then(function(count) {
+				if (count === 0) {
+					let author = new Author({
+						fullname: 'John Doe',
+						email: 'john@johndoe.com'
+					});
+					author.save();					
+				}
+			})
+			.catch(function(err) {
+				done(err);
+			});
 
 		// == generate token for testing ==
 		let payload = { id: 'randomid0989835909' };
@@ -43,12 +50,14 @@ describe('# Testing Author Routes', function() {
 	// == In this test it's expected a author list ==
 	describe('GET /api/v1/authors', function() {
 		it('returns a list of authors', function(done) {
-			chai.request(server)
+			supertest(server)
 				.get('/api/v1/authors')
 				.set('Authorization', apiKey)
+				.expect('Content-Type', /json/)
+				.expect(200)
 				.end(function(err, res) {
-					expect(res).to.have.status(200);
-					expect(res).to.be.json;
+					// expect(res).to.have.status(200);
+					// expect(res).to.be.json;
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').eql(true);
 					expect(res.body.results).to.be.an('array');
@@ -57,13 +66,13 @@ describe('# Testing Author Routes', function() {
 		});
 
 		it('returns a list of authors per limit value (query string use case)', function(done) {
-			chai.request(server)
+			supertest(server)
 				.get('/api/v1/authors')
 				.query({ offset: 0, limit: 10 })
 				.set('Authorization', apiKey)
+				.expect('Content-Type', /json/)
+				.expect(200)
 				.end(function(err, res) {
-					expect(res).to.have.status(200);
-					expect(res).to.be.json;
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').eql(true);
 					expect(res.body.results).to.be.an('array');
@@ -72,7 +81,7 @@ describe('# Testing Author Routes', function() {
 		});
 	});
 
-	// It's expected a spesific author
+	// == It's expected a spesific author ==
 	describe('GET /api/v1/authors/{authorid}', function() {
 		it('returns a spesific author id', function(done) {
 			// == create a fake author ==
@@ -83,12 +92,12 @@ describe('# Testing Author Routes', function() {
 
 			author
 				.save(function(err, author) {
-					chai.request(server)
+					supertest(server)
 						.get(`/api/v1/authors/${author._id}`)
 						.set('Authorization', apiKey)
+						.expect('Content-Type', /json/)
+						.expect(200)
 						.end(function(err, res) {
-							expect(res).to.have.status(200);
-							expect(res).to.be.json;
 							expect(res.body).to.be.an('object');
 							expect(res.body).to.have.property('success').eql(true);
 							expect(res.body.results).to.be.an('object');
@@ -101,11 +110,12 @@ describe('# Testing Author Routes', function() {
 		it('returns a message authorid not found', function(done) {
 			let fakeAuthor = { _id: '1234' };
 
-			chai.request(server)
+			supertest(server)
 				.get(`/api/v1/authors/${fakeAuthor._id}`)
 				.set('Authorization', apiKey)
+				.expect('Content-Type', /json/)
+				.expect(200)
 				.end(function(err, res) {
-					expect(res).to.be.json;
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').eql(false);
 					done(err);
@@ -113,7 +123,7 @@ describe('# Testing Author Routes', function() {
 		});
 	});
 
-	// Testing the save author expecting status 201 of success
+	// == Testing the save author expecting status 201 of success ==
 	describe('POST /api/v1/authors', function() {
 		it('saves a new author', function(done) {
 			let newAuthor = {
@@ -121,12 +131,13 @@ describe('# Testing Author Routes', function() {
 				email: 'jimmy@jimmydoe.com'
 			};
 			
-			chai.request(server)
+			supertest(server)
 				.post('/api/v1/authors')
 				.set('Authorization', apiKey)
 				.send(newAuthor)
+				.expect('Content-Type', /json/)
+				.expect(201)
 				.end(function(err, res) {
-					expect(res).to.have.status(201);
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').eql(true);
 					expect(res.body.results).to.be.an('object');
@@ -140,15 +151,16 @@ describe('# Testing Author Routes', function() {
 		it('returns a message failed to save author data', function(done) {
 			let fakeAuthor = {
 				fullname: 'Fake Doe',
-				emails: 'fake@fakedoe.com'
+				emails: 'fake@fakedoe.com'  // wrong field `emails`
 			};
 
-			chai.request(server)
+			supertest(server)
 				.post('/api/v1/authors')
 				.set('Authorization', apiKey)
 				.send(fakeAuthor)
+				.expect('Content-Type', /json/)
+				.expect(200)
 				.end(function(err, res) {
-					expect(res).to.be.json;
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').eql(false);
 					expect(res.body.results).to.be.an('object');
@@ -159,7 +171,7 @@ describe('# Testing Author Routes', function() {
 		});
 	});
 
-	// testing how to update an author
+	// == testing how to update an author ==
 	describe('PUT /api/v1/authors{authorid}', function() {
 		it('update an author', function(done) {
 			let updateAuthor = {
@@ -170,10 +182,12 @@ describe('# Testing Author Routes', function() {
 			Author
 				.findOne({})
 				.exec(function(err, author) {
-					chai.request(server)
+					supertest(server)
 						.put(`/api/v1/authors/${author._id}`)
 						.set('Authorization', apiKey)
 						.send({...updateAuthor, id: author._id})
+						.expect('Content-Type', /json/)
+						.expect(200)
 						.end(function(err, res) {
 							expect(res.body).to.be.an('object');
 							expect(res.body).to.have.property('success').eql(true);
@@ -194,12 +208,13 @@ describe('# Testing Author Routes', function() {
 				_id: 1234
 			};
 
-			chai.request(server)
+			supertest(server)
 				.put(`/api/v1/authors/${fakeAuthor._id}`)
 				.set('Authorization', apiKey)
 				.send(fakeAuthor)
+				.expect('Content-Type', /json/)
+				.expect(200)
 				.end(function(err, res) {
-					expect(res).to.be.json;
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').eql(false);
 					expect(res.body.results).to.be.an('object');
@@ -210,17 +225,17 @@ describe('# Testing Author Routes', function() {
 		});
 	});
 
-	// testing how to delete an author
+	// == testing how to delete an author ==
 	describe('DELETE /api/authors/{authorid}', function() {
 		it('remove an author', function(done) {
 			Author
 				.findOne({})
 				.exec(function(err, author) {
-					chai.request(server)
+					supertest(server)
 						.delete(`/api/v1/authors/${author._id}`)
 						.set('Authorization', apiKey)
+						.expect(204)
 						.end(function(err, res) {
-							expect(res).to.have.status(204);
 							expect(res.body).to.be.an('object');
 							done(err);
 						});
