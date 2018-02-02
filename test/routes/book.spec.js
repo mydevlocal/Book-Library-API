@@ -19,10 +19,12 @@ describe('# Testing Book Routes', function() {
 		Author
 			.findOne({})
 			.then(function(author) {
+				console.log('get author ', author._id);
 				authorid = author._id;
 				return Category.findOne({}).exec();
 			})
 			.then(function(category) {
+				console.log('get category ', category._id);
 				categoryid = category._id;
 				return Book.count({}).exec();
 			})
@@ -34,7 +36,9 @@ describe('# Testing Book Routes', function() {
 					author: authorid,
 					published: Date.now()
 				});
-				book.save();					
+				book.save(function(err, saved) {
+					console.log('get saved ', saved._id);
+				});					
 			})
 			.catch(function(err) { done(err); });
 
