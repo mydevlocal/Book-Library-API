@@ -12,8 +12,9 @@ describe('# Testing Author Routes', function() {
 			db.on('error', function(err) { done(err); });
 		});
 		
-		// == empty the author collection ==
+		// == empty the author & category collection ==
 		Author.remove({}).exec();
+		Category.remove({}).exec();
 
 		// == save temporary author ==
 		Author
