@@ -12,7 +12,7 @@ describe('# Testing User Routes', function() {
 		});
 		
 		// == empty the user collection ==
-		User.remove({});
+		User.remove({}).exec();
 
 		// == save temporary user ==
 		User
