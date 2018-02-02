@@ -13,7 +13,7 @@ describe('# Testing Author Routes', function() {
 		});
 		
 		// == empty the author collection ==
-		Author.remove({});
+		Author.remove({}).exec();
 
 		// == save temporary author ==
 		Author
