@@ -146,9 +146,9 @@ describe('# Testing Category Routes', function() {
 		});
 	});
 
-	// == testing how to update an category ==
+	// == testing how to update a category ==
 	describe('PUT /api/v1/categories{categoryid}', function() {
-		it('update an category', function(done) {
+		it('update a category', function(done) {
 			let updateCategory = {
 				category_name: 'Sci-Fi',
 			};
@@ -173,7 +173,7 @@ describe('# Testing Category Routes', function() {
 				});
 		});
 
-		// == testing for failed to update an category ==
+		// == testing for failed to update a category ==
 		it('returns a message failed to update category data', function(done) {
 			let fakeCategory = {
 				category_name: 'Mistery',
@@ -197,9 +197,9 @@ describe('# Testing Category Routes', function() {
 		});
 	});
 
-	// == testing how to delete an category ==
+	// == testing how to delete a category ==
 	describe('DELETE /api/categories/{categoryid}', function() {
-		it('remove an category', function(done) {
+		it('remove a category', function(done) {
 			Category
 				.findOne({})
 				.exec(function(err, category) {
