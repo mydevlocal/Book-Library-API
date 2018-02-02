@@ -24,7 +24,13 @@ describe('# Testing Author Routes', function() {
 						fullname: 'John Doe',
 						email: 'john@johndoe.com'
 					});
-					author.save();					
+					author.save();
+
+					// == because of the execution order of mocha, the category must be created before execute book test ==
+					let category = new Category({
+						category_name: 'Mistery'
+					});
+					category.save();
 				}
 			})
 			.catch(function(err) {
