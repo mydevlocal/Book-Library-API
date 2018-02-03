@@ -67,9 +67,10 @@ describe('# Testing Book Routes', function() {
 					
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('array');
 					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
-					expect(res.body.results[0]).to.have.property('_id').to.be.a('string');
+					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
 					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('pages').to.be.finite;
@@ -91,9 +92,10 @@ describe('# Testing Book Routes', function() {
 					
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('array');
 					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
-					expect(res.body.results[0]).to.have.property('_id').to.be.a('string');
+					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
 					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('pages').to.be.finite;
@@ -128,8 +130,9 @@ describe('# Testing Book Routes', function() {
 
 							expect(res.body).to.be.an('object');
 							expect(res.body).to.have.property('success').equal(true);
+							expect(res.body).to.have.property('message').to.be.a('string');
 							expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
-							expect(res.body.results).to.have.property('_id').to.be.a('string');
+							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 							expect(res.body.results).to.have.property('title').to.be.a('string');
 							expect(res.body.results).to.have.property('category').to.be.an('object');
 							expect(res.body.results).to.have.property('pages').to.be.finite;
@@ -180,8 +183,9 @@ describe('# Testing Book Routes', function() {
 
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
-					expect(res.body.results).to.have.property('_id').to.be.a('string');
+					expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results).to.have.property('title').to.be.a('string');
 					expect(res.body.results).to.have.property('category').to.be.a('string');
 					expect(res.body.results).to.have.property('pages').to.be.finite;
@@ -244,8 +248,9 @@ describe('# Testing Book Routes', function() {
 
 							expect(res.body).to.be.an('object');
 							expect(res.body).to.have.property('success').equal(true);
+							expect(res.body).to.have.property('message').to.be.a('string');
 							expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
-							expect(res.body.results).to.have.property('_id').to.be.a('string');
+							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 							expect(res.body.results).to.have.property('title').to.be.a('string');
 							expect(res.body.results).to.have.property('category').to.be.a('string');
 							expect(res.body.results).to.have.property('pages').to.be.finite;
@@ -276,6 +281,7 @@ describe('# Testing Book Routes', function() {
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('object').that.has.all.keys('message', 'name', 'stringValue', 'kind', 'value', 'path');
 					expect(res.body.results).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.have.property('name').to.be.a('string').equal('CastError');
