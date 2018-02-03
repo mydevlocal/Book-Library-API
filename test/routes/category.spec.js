@@ -53,8 +53,12 @@ describe('# Testing Category Routes', function() {
 				.expect(200)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(true);
+					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('array');
+					expect(res.body.results[0]).that.has.all.keys('__v', '_id', 'category_name', 'createdAt', 'updatedAt');
+					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
+					expect(res.body.results[0]).to.have.property('category_name').to.be.a('string');
 					done(err);
 				});
 		});
@@ -77,8 +81,11 @@ describe('# Testing Category Routes', function() {
 						.expect(200)
 						.end(function(err, res) {
 							expect(res.body).to.be.an('object');
-							expect(res.body).to.have.property('success').eql(true);
-							expect(res.body.results).to.be.an('object');
+							expect(res.body).to.have.property('success').equal(true);
+							expect(res.body).to.have.property('message').to.be.a('string');
+							expect(res.body.results).that.has.all.keys('__v', '_id', 'category_name', 'createdAt', 'updatedAt');
+							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
+							expect(res.body.results).to.have.property('category_name').to.be.a('string');
 							done(err);
 						});					
 				});
@@ -94,8 +101,9 @@ describe('# Testing Category Routes', function() {
 				.expect('Content-Type', /json/)
 				.expect(200)
 				.end(function(err, res) {
-					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(false);
+					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					done(err);
 				});
 		});
@@ -116,8 +124,10 @@ describe('# Testing Category Routes', function() {
 				.expect(201)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(true);
-					expect(res.body.results).to.be.an('object');
+					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'category_name', 'createdAt', 'updatedAt');
+					expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results).to.have.property('category_name').to.be.a('string');
 					done(err);
 				});
@@ -137,10 +147,11 @@ describe('# Testing Category Routes', function() {
 				.expect(200)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(false);
-					expect(res.body.results).to.be.an('object');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body.results).to.be.an('object').that.has.all.keys('errors', '_message', 'message', 'name');
 					expect(res.body.results).to.have.property('errors').to.be.an('object');
-					expect(res.body.results).to.have.property('name').to.be.a('string').eql('ValidationError');
+					expect(res.body.results).to.have.property('name').to.be.a('string').equal('ValidationError');
 					done(err);
 				});
 		});
@@ -164,10 +175,11 @@ describe('# Testing Category Routes', function() {
 						.expect(200)
 						.end(function(err, res) {
 							expect(res.body).to.be.an('object');
-							expect(res.body).to.have.property('success').eql(true);
-							expect(res.body.results).to.be.an('object');
-							expect(res.body.results).to.have.property('category_name').to.be.a('string');
+							expect(res.body).to.have.property('success').equal(true);
+							expect(res.body).to.have.property('message').to.be.a('string');
+							expect(res.body.results).to.be.an('object').that.has.all.keys('_id', 'category_name');
 							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
+							expect(res.body.results).to.have.property('category_name').to.be.a('string');
 							done(err);
 						});
 				});
@@ -188,10 +200,11 @@ describe('# Testing Category Routes', function() {
 				.expect(200)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(false);
-					expect(res.body.results).to.be.an('object');
-					expect(res.body.results).to.have.property('name').to.be.a('string').eql('CastError');
-					expect(res.body.results).to.have.property('kind').to.be.a('string').eql('ObjectId');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body.results).to.be.an('object').that.has.all.keys('message', 'name', 'stringValue', 'kind', 'value', 'path');
+					expect(res.body.results).to.have.property('name').to.be.a('string').equal('CastError');
+					expect(res.body.results).to.have.property('kind').to.be.a('string').equal('ObjectId');
 					done(err);
 				});
 		});
@@ -212,6 +225,19 @@ describe('# Testing Category Routes', function() {
 							done(err);
 						});
 				});			
+		});
+
+		it('returns a message failed to delete a category', function(done) {
+			let category = { _id: 1234 };
+			supertest(server)
+				.delete(`/api/v1/categories/${category._id}`)
+				.set('Authorization', apiKey)
+				.end(function(err, res) {
+					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					done(err);
+				});	
 		});
 	});
 });
