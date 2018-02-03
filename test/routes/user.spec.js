@@ -55,7 +55,8 @@ describe('# Testing User Routes', function() {
 				.expect(200)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(true);
+					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body).to.have.property('token').to.be.a('string');
 					done(err);
 				});
@@ -74,7 +75,8 @@ describe('# Testing User Routes', function() {
 				.expect(401)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(false);
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					done(err);
 				});
 		});
@@ -92,7 +94,8 @@ describe('# Testing User Routes', function() {
 				.expect(401)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(false);
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					done(err);
 				});
 		});
@@ -120,7 +123,8 @@ describe('# Testing User Routes', function() {
 				.expect(201)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(true);
+					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					done(err);
 				});
 		});
@@ -137,7 +141,8 @@ describe('# Testing User Routes', function() {
 				.expect(200)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(false);
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					done(err);
 				});
 		});
@@ -154,7 +159,8 @@ describe('# Testing User Routes', function() {
 				.expect(500)
 				.end(function(err, res) {
 					expect(res.body).to.be.an('object');
-					expect(res.body).to.have.property('success').eql(false);
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
 					done(err);
 				});
 		});
