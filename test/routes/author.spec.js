@@ -16,6 +16,12 @@ describe('# Testing Author Routes', function() {
 		Author.remove({}).exec();
 		Category.remove({}).exec();
 
+		// == because of the execution order of mocha, the category must be created before execute book test ==
+		let category = new Category({
+			category_name: 'Mistery'
+		});
+		category.save();
+
 		// == save temporary author ==
 		Author
 			.count({})
@@ -26,12 +32,6 @@ describe('# Testing Author Routes', function() {
 						email: 'john@johndoe.com'
 					});
 					author.save();
-
-					// == because of the execution order of mocha, the category must be created before execute book test ==
-					let category = new Category({
-						category_name: 'Mistery'
-					});
-					category.save();
 				}
 			})
 			.catch(function(err) {
