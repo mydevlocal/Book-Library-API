@@ -1,6 +1,5 @@
 language: node_js
 node_js:
-  - "node"
   - "8"
 services:
   - mongodb
@@ -14,14 +13,12 @@ env:
     - PORT=3356
   matrix:
     - NODE_ENV=development
-    - NODE_ENV=production
+before_install:
+  - npm install -g eslint
 install:
   - npm --production=false install
-before_script:
-  - mkdir -p logs && touch logs/{mongodb-connection.log,error.log}
-  - if [ "${NODE_ENV}" = "production" ]; then npm run start-prod & sleep 5s && pkill node; fi
 script:
-  - if [ "${NODE_ENV}" = "development" ]; then npm test; fi
+  - if [ "${NODE_ENV}" = "development" ]; then npm test --silent; fi
 branches:
   only:
     - master
