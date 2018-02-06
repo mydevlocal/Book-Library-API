@@ -1,59 +1,57 @@
-'use strict';
+/* global describe, it, before, after,
+mockgoose, mongoose, opts, supertest, server,
+expect, User */
 
 // == run testing for user routes ==
-describe('# Testing User Routes', function() {
+describe('# Testing User Routes', () => {
 	// == This function will run before test to clear user collection ==
-	before(function(done) {
-		mockgoose.prepareStorage().then(function() {
+	before((done) => {
+		mockgoose.prepareStorage().then(() => {
 			mongoose.connect(opts.mongodb.dbURL, opts.mongodb.dbOptions);
 			mongoose.Promise = global.Promise;
-			const db         = mongoose.connection;
-			db.on('error', function(err) { done(err); });
+			const db = mongoose.connection;
+			db.on('error', (err) => { done(err); });
 		});
-		
+
 		// == empty the user collection ==
 		User.remove({}).exec();
-
-		// == save temporary user ==
-		User
-			.count({})
-			.then(function(count) {
-				if (count === 0) {
-					let user = new User();
-					user.username     = 'John';
-					user.password     = user.encryptPassword('1234');
-					user.fullname     = 'John Doe';
-					user.email        = 'john@johndoe.com';
-					user.address      = 'localhost';
-					user.phone_number = 19477294;
-
-					user.save();
-				}
-			}).catch(function(err) { done(err); });
-			done();			
+		done();
 	});
 
 	// == after passing all testing block, remove all of the collections from temp memory ==
-	after(function(done) {
-		mockgoose.helper.reset().then(function() {
+	after((done) => {
+		mockgoose.helper.reset().then(() => {
 			done();
 		});
 	});
 
 	// == Testing the login user expecting status 200 of success ==
-	describe('POST /api/v1/signin', function() {
-		it('Login success & get a token', function(done) {
-			let loginUser = {
+	describe('POST /api/v1/signin', () => {
+		// == save temporary user ==
+		before((done) => {
+			const user = new User();
+			user.username = 'John';
+			user.password = '1234';
+			user.fullname = 'John Doe';
+			user.email = 'john@johndoe.com';
+			user.address = 'localhost';
+			user.phone_number = 19477294;
+
+			user.save().then(() => { done(); });
+		});
+
+		it('Login success & get a token', (done) => {
+			const loginUser = {
 				username: 'John',
-				password: '1234'
+				password: '1234',
 			};
-			
+
 			supertest(server)
 				.post('/api/v1/signin')
 				.send(loginUser)
 				.expect('Content-Type', /json/)
 				.expect(200)
-				.end(function(err, res) {
+				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -62,18 +60,19 @@ describe('# Testing User Routes', function() {
 				});
 		});
 
-		it('returns a message password did not match with 401 status', function(done) {
-			let loginUser = {
+		it('returns a message password did not match with 401 status', (done) => {
+			const loginUser = {
 				username: 'John',
-				password: '12345'  // wrong password
+				password: '12345',
+				// wrong password
 			};
-			
+
 			supertest(server)
 				.post('/api/v1/signin')
 				.send(loginUser)
 				.expect('Content-Type', /json/)
 				.expect(401)
-				.end(function(err, res) {
+				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -81,18 +80,19 @@ describe('# Testing User Routes', function() {
 				});
 		});
 
-		it('returns a message invalid username with 401 status', function(done) {
-			let loginUser = {
-				username: 'john',  // wrong username
-				password: '12345'  // wrong password
+		it('returns a message invalid username with 401 status', (done) => {
+			const loginUser = {
+				username: 'john',
+				password: '12345',
+				// wrong username & wrong password
 			};
-			
+
 			supertest(server)
 				.post('/api/v1/signin')
 				.send(loginUser)
 				.expect('Content-Type', /json/)
 				.expect(401)
-				.end(function(err, res) {
+				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -101,27 +101,27 @@ describe('# Testing User Routes', function() {
 		});
 	});
 
-	// == Testing for signup user == 
-	describe('POST /api/v1/signup', function() {
-		before(function(done) {
+	// == Testing for signup user ==
+	describe('POST /api/v1/signup', () => {
+		before((done) => {
 			// == remove user with username Jimmy ==
-			User.remove({ 'username': 'Jimmy' }, function(err) {
+			User.remove({ username: 'Jimmy' }, (err) => {
 				done(err);
 			});
 		});
 
-		it('returns signup success message', function(done) {
-			let loginUser = {
+		it('returns signup success message', (done) => {
+			const loginUser = {
 				username: 'Jimmy',
-				password: '1234'
+				password: '1234',
 			};
-			
+
 			supertest(server)
 				.post('/api/v1/signup')
 				.send(loginUser)
 				.expect('Content-Type', /json/)
 				.expect(201)
-				.end(function(err, res) {
+				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -129,17 +129,17 @@ describe('# Testing User Routes', function() {
 				});
 		});
 
-		it('returns a message username already taken', function(done) {
-			let loginUser = {
-				username: 'John'
+		it('returns a message username already taken', (done) => {
+			const loginUser = {
+				username: 'John',
 			};
-			
+
 			supertest(server)
 				.post('/api/v1/signup')
 				.send(loginUser)
 				.expect('Content-Type', /json/)
 				.expect(200)
-				.end(function(err, res) {
+				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -147,20 +147,21 @@ describe('# Testing User Routes', function() {
 				});
 		});
 
-		it('returns a message failed to signup', function(done) {
-			let loginUser = {
-				usernamse: 'John'
+		it('returns a message failed to signup', (done) => {
+			const loginUser = {
+				usernames: 'John',
 			};
-			
+
 			supertest(server)
 				.post('/api/v1/signup')
 				.send(loginUser)
 				.expect('Content-Type', /json/)
 				.expect(500)
-				.end(function(err, res) {
+				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body).to.have.property('error').to.be.an('object');
 					done(err);
 				});
 		});
