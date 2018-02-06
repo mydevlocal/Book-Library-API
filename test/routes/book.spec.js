@@ -1,70 +1,85 @@
-'use strict';
+/* global describe, it, before, after,
+mockgoose, mongoose, jwt, opts, supertest, server,
+expect, Author, Book, Category */
 
 // == run testing for book routes ==
-describe('# Testing Book Routes', function() {
+describe('# Testing Book Routes', () => {
 	// == This function will run before test to clear book collection ==
-	let apiKey, categoryid, authorid = null;
-	before(function(done) {
-		mockgoose.prepareStorage().then(function() {
+	// `const` and `let` declarations are ignored if they are not specified
+	/* eslint one-var: ["error", { var: "never" }] */
+	let apiKey,
+		authorid,
+		categoryid;
+
+	before((done) => {
+		mockgoose.prepareStorage().then(() => {
 			mongoose.connect(opts.mongodb.dbURL, opts.mongodb.dbOptions);
 			mongoose.Promise = global.Promise;
-			const db         = mongoose.connection;
-			db.on('error', function(err) { done(err); });
+			const db = mongoose.connection;
+			db.on('error', (err) => { done(err); });
 		});
-		
+
 		// == empty the book collection ==
 		Book.remove({}).exec();
 
-		// == get author & category to save temporary book ==
+		// == get author id to save temporary book ==
 		Author
 			.findOne({})
-			.then(function(author) {
-				authorid = author._id;
-				return Category.findOne({}).exec();
-			})
-			.then(function(category) {
-				categoryid = category._id;
-				return Book.count({}).exec();
-			})
-			.then(function(count) {
-				let book = new Book({
-					title: 'Book XII',
-					category: categoryid,
-					pages: 256,
-					author: authorid,
-					published: Date.now()
-				});
-				book.save();					
-			})
-			.catch(function(err) { done(err); });
+			.exec((err, author) => {
+				if (err) done(err);
+				authorid = author._id; /* eslint no-underscore-dangle: 0 */
+			});
 
 		// == generate token for testing ==
-		let payload = { id: 'randomid0989835909' };
+		const payload = { id: 'randomid0989835909' };
 
-		jwt.sign(payload, opts.jwtSecret.tokenKey, function(err, token) {
+		jwt.sign(payload, opts.jwtSecret.tokenKey, (err, token) => {
 			apiKey = token;
-		});	
+		});
 		done();
 	});
 
 	// == after passing all testing block, remove all of the collections from temp memory ==
-	after(function(done) {
-		mockgoose.helper.reset().then(function() {
+	after((done) => {
+		mockgoose.helper.reset().then(() => {
 			done();
 		});
 	});
 
 	// == In this test it's expected a book list ==
-	describe('GET /api/v1/books', function() {
-		it('returns a list of books', function(done) {
+	describe('GET /api/v1/books', () => {
+		before((done) => {
+			Book.count({}).then((count) => {
+				if (count === 0) {
+					Category
+						.findOne({})
+						.then((category) => {
+							categoryid = category._id; /* eslint no-underscore-dangle: 0 */
+
+							// == categoryid is ready, then save new temp book ==
+							const book = new Book({
+								title: 'Book XII',
+								category: categoryid,
+								pages: 256,
+								author: authorid,
+								published: Date.now(),
+							});
+							book.save();
+						}).catch((err) => { done(err); });
+				}
+			}).catch((err) => { done(err); });
+			done();
+		});
+
+		it('returns a list of books', (done) => {
 			supertest(server)
 				.get('/api/v1/books')
 				.set('Authorization', apiKey)
 				.expect('Content-Type', /json/)
 				.expect(200)
-				.end(function(err, res) {
-					let today = res.body.results[0].published;
-					
+				.end((err, res) => {
+					const today = res.body.results[0].published;
+
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -73,23 +88,25 @@ describe('# Testing Book Routes', function() {
 					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
 					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
+					/* eslint-disable */
 					expect(res.body.results[0]).to.have.property('pages').to.be.finite;
+					/* eslint-enable */
 					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('published').to.equal(today);
 					done(err);
 				});
 		});
 
-		it('returns a list of books per limit value (query string use case)', function(done) {
+		it('returns a list of books per limit value (query string use case)', (done) => {
 			supertest(server)
 				.get('/api/v1/books')
 				.query({ offset: 0, limit: 10 })
 				.set('Authorization', apiKey)
 				.expect('Content-Type', /json/)
 				.expect(200)
-				.end(function(err, res) {
-					let today = res.body.results[0].published;
-					
+				.end((err, res) => {
+					const today = res.body.results[0].published;
+
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -98,7 +115,9 @@ describe('# Testing Book Routes', function() {
 					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
 					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
+					/* eslint-disable */
 					expect(res.body.results[0]).to.have.property('pages').to.be.finite;
+					/* eslint-enable */
 					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('published').to.equal(today);
 					done(err);
@@ -107,26 +126,26 @@ describe('# Testing Book Routes', function() {
 	});
 
 	// == It's expected a spesific book ==
-	describe('GET /api/v1/books/{bookid}', function() {
-		it('returns a spesific book id', function(done) {
+	describe('GET /api/v1/books/{bookid}', () => {
+		it('returns a spesific book id', (done) => {
 			// == create a fake book ==
-			let book = new Book({
+			const book = new Book({
 				title: 'Book V',
 				category: categoryid,
 				pages: 233,
 				author: authorid,
-				published: Date.now()
+				published: Date.now(),
 			});
 
 			book
-				.save(function(err, book) {
+				.save((err, data) => {
 					supertest(server)
-						.get(`/api/v1/books/${book._id}`)
+						.get(`/api/v1/books/${data._id}`)
 						.set('Authorization', apiKey)
 						.expect('Content-Type', /json/)
 						.expect(200)
-						.end(function(err, res) {
-							let today = res.body.results.published;
+						.end((error, res) => {
+							const today = res.body.results.published;
 
 							expect(res.body).to.be.an('object');
 							expect(res.body).to.have.property('success').equal(true);
@@ -135,51 +154,54 @@ describe('# Testing Book Routes', function() {
 							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 							expect(res.body.results).to.have.property('title').to.be.a('string');
 							expect(res.body.results).to.have.property('category').to.be.an('object');
+							/* eslint-disable */
 							expect(res.body.results).to.have.property('pages').to.be.finite;
+							/* eslint-enable */
 							expect(res.body.results).to.have.property('author').to.be.an('object');
 							expect(res.body.results).to.have.property('published').to.equal(today);
-							done(err);
-						});					
+							done(error);
+						});
 				});
 		});
 
 		// == testing for book not found ==
-		it('returns a message bookid not found', function(done) {
-			let fakeBook = { _id: '1234' };
+		it('returns a message bookid not found', (done) => {
+			const fakeBook = { _id: '1234' };
 
 			supertest(server)
-				.get(`/api/v1/books/${fakeBook._id}`)
+				.get(`/api/v1/books/${fakeBook._id}`) /* eslint no-underscore-dangle: 0 */
 				.set('Authorization', apiKey)
 				.expect('Content-Type', /json/)
 				.expect(200)
-				.end(function(err, res) {
-					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message');
+				.end((err, res) => {
+					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body).to.have.property('error').to.be.an('object');
 					done(err);
 				});
 		});
 	});
 
 	// == Testing the save book expecting status 201 of success ==
-	describe('POST /api/v1/books', function() {
-		it('saves a new book', function(done) {
-			let newBook = {
+	describe('POST /api/v1/books', () => {
+		it('saves a new book', (done) => {
+			const newBook = {
 				title: 'Book I',
 				category: categoryid,
 				pages: 198,
 				author: authorid,
-				published: Date.now()
+				published: Date.now(),
 			};
-			
+
 			supertest(server)
 				.post('/api/v1/books')
 				.set('Authorization', apiKey)
 				.send(newBook)
 				.expect('Content-Type', /json/)
 				.expect(201)
-				.end(function(err, res) {
-					let today = res.body.results.published;
+				.end((err, res) => {
+					const today = res.body.results.published;
 
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
@@ -188,7 +210,9 @@ describe('# Testing Book Routes', function() {
 					expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results).to.have.property('title').to.be.a('string');
 					expect(res.body.results).to.have.property('category').to.be.a('string');
+					/* eslint-disable */
 					expect(res.body.results).to.have.property('pages').to.be.finite;
+					/* eslint-enable */
 					expect(res.body.results).to.have.property('author').to.be.a('string');
 					expect(res.body.results).to.have.property('published').to.equal(today);
 					done(err);
@@ -196,13 +220,13 @@ describe('# Testing Book Routes', function() {
 		});
 
 		// == testing for failed to save new book ==
-		it('returns a message failed to save book data', function(done) {
-			let fakeBook = {
+		it('returns a message failed to save book data', (done) => {
+			const fakeBook = {
 				title: 'Book I',
 				categorys: categoryid,
 				pages: 198,
 				author: authorid,
-				published: Date.now()
+				published: Date.now(),
 			};
 
 			supertest(server)
@@ -211,7 +235,7 @@ describe('# Testing Book Routes', function() {
 				.send(fakeBook)
 				.expect('Content-Type', /json/)
 				.expect(200)
-				.end(function(err, res) {
+				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -224,52 +248,54 @@ describe('# Testing Book Routes', function() {
 	});
 
 	// == testing how to update a book ==
-	describe('PUT /api/v1/books{bookid}', function() {
-		it('update a book', function(done) {
-			let updateBook = {
+	describe('PUT /api/v1/books{bookid}', () => {
+		it('update a book', (done) => {
+			const updateBook = {
 				title: 'Book II',
-				categorys: categoryid,
+				category: categoryid,
 				pages: 199,
 				author: authorid,
-				published: Date.now()
+				published: Date.now(),
 			};
 
 			Book
 				.findOne({})
-				.exec(function(err, book) {
+				.exec((err, book) => {
 					supertest(server)
 						.put(`/api/v1/books/${book._id}`)
 						.set('Authorization', apiKey)
-						.send({...updateBook, id: book._id})
+						.send({ ...updateBook, id: book._id })
 						.expect('Content-Type', /json/)
 						.expect(200)
-						.end(function(err, res) {
-							let today = res.body.results.published;
+						.end((error, res) => {
+							const today = res.body.results.published;
 
 							expect(res.body).to.be.an('object');
 							expect(res.body).to.have.property('success').equal(true);
 							expect(res.body).to.have.property('message').to.be.a('string');
-							expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+							expect(res.body.results).to.be.an('object').that.has.all.keys('_id', 'title', 'category', 'pages', 'author', 'published');
 							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 							expect(res.body.results).to.have.property('title').to.be.a('string');
 							expect(res.body.results).to.have.property('category').to.be.a('string');
+							/* eslint-disable */
 							expect(res.body.results).to.have.property('pages').to.be.finite;
+							/* eslint-enable */
 							expect(res.body.results).to.have.property('author').to.be.a('string');
 							expect(res.body.results).to.have.property('published').to.equal(today);
-							done(err);
+							done(error);
 						});
 				});
 		});
 
 		// == testing for failed to update a book ==
-		it('returns a message failed to update book data', function(done) {
-			let fakeBook = {
+		it('returns a message failed to update book data', (done) => {
+			const fakeBook = {
 				title: 'Book VII',
 				categorys: categoryid,
 				pages: 10,
 				author: authorid,
 				published: Date.now(),
-				_id: 1234
+				_id: 1234,
 			};
 
 			supertest(server)
@@ -278,7 +304,7 @@ describe('# Testing Book Routes', function() {
 				.send(fakeBook)
 				.expect('Content-Type', /json/)
 				.expect(200)
-				.end(function(err, res) {
+				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -292,33 +318,34 @@ describe('# Testing Book Routes', function() {
 	});
 
 	// == testing how to delete a book ==
-	describe('DELETE /api/books/{bookid}', function() {
-		it('remove a book', function(done) {
+	describe('DELETE /api/books/{bookid}', () => {
+		it('remove a book', (done) => {
 			Book
 				.findOne({})
-				.exec(function(err, book) {
+				.exec((err, book) => {
 					supertest(server)
 						.delete(`/api/v1/books/${book._id}`)
 						.set('Authorization', apiKey)
 						.expect(204)
-						.end(function(err, res) {
+						.end((error, res) => {
 							expect(res.body).to.be.an('object');
-							done(err);
+							done(error);
 						});
-				});			
+				});
 		});
 
-		it('returns a message failed to delete a book', function(done) {
-			let book = { _id: 1234 };
+		it('returns a message failed to delete a book', (done) => {
+			const book = { _id: 1234 };
 			supertest(server)
 				.delete(`/api/v1/books/${book._id}`)
 				.set('Authorization', apiKey)
-				.end(function(err, res) {
-					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message');
+				.end((err, res) => {
+					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body).to.have.property('error').to.be.an('object');
 					done(err);
-				});	
+				});
 		});
 	});
 });
