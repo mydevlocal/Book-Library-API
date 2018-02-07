@@ -22,26 +22,21 @@ UserSchema.pre('save', function (next) {
 	if (!user.isModified('password')) return next();
 
 	// generate a salt
-	bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
-		if (err) return next(err);
-
+	return bcrypt.genSalt(SALT_WORK_FACTOR).then((salt) => {
 		// hash the password using new salt/
-		bcrypt.hash(user.password, salt, function (error, hash) {
-			if (error) return next(error);
-
+		return bcrypt.hash(user.password, salt).then((hash) => {
 			// override the cleartext password with the hashed one
 			user.password = hash;
-			next();
-		});
-	});
+			return next();
+		}).catch(next);
+	}).catch(next);
 });
 
 /* eslint func-names: ["error", "never"] */
 UserSchema.methods.comparePassword = function (enteredPassword, cb) {
-	bcrypt.compare(enteredPassword, this.password, function (err, isMatch) {
-		if (err) return cb(err);
-		cb(null, isMatch);
-	});
+	return bcrypt.compare(enteredPassword, this.password).then((isMatch) => {
+		return cb(null, isMatch);
+	}).catch(cb);
 };
 
 module.exports = mongoose.model('User', UserSchema);
