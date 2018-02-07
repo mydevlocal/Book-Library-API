@@ -2,7 +2,6 @@
 > Stateless RESTful API (NodeJS/Express, JWT, MongoDB), testing with (Mocha, Chai, Supertest) & include the API Docs powered by [Docbox](https://github.com/tmcw/docbox "Docbox Homepage").
 
 [![Build Status](https://travis-ci.org/nubilfi/Book-Library-API.svg?branch=master)](https://travis-ci.org/nubilfi/Book-Library-API)
-[![Coverage Status](https://david-dm.org/nubilfi/Book-Library-API.svg)](https://coveralls.io/r/nubilfi/Book-Library-API?branch=master)
 
 I created this app from scratch and maybe this app is not perfect for you (of couse this app isn't perfect :blush:).
 ## Installation
