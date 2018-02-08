@@ -165,14 +165,14 @@ describe('# Testing Book Routes', () => {
 		});
 
 		// == testing for book not found ==
-		it('returns a message bookid not found', (done) => {
+		it('returns a unknown server error when trying to find book with id', (done) => {
 			const fakeBook = { _id: '1234' };
 
 			supertest(server)
 				.get(`/api/v1/books/${fakeBook._id}`) /* eslint no-underscore-dangle: 0 */
 				.set('Authorization', apiKey)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
 					expect(res.body).to.have.property('success').equal(false);
@@ -220,7 +220,7 @@ describe('# Testing Book Routes', () => {
 		});
 
 		// == testing for failed to save new book ==
-		it('returns a message failed to save book data', (done) => {
+		it('returns a message unknown server error when trying to save new book', (done) => {
 			const fakeBook = {
 				title: 'Book I',
 				categorys: categoryid,
@@ -234,7 +234,7 @@ describe('# Testing Book Routes', () => {
 				.set('Authorization', apiKey)
 				.send(fakeBook)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
@@ -295,6 +295,30 @@ describe('# Testing Book Routes', () => {
 				pages: 10,
 				author: authorid,
 				published: Date.now(),
+				_id: mongoose.Types.ObjectId(123456789012),
+			};
+
+			supertest(server)
+				.put(`/api/v1/books/${fakeBook._id}`)
+				.set('Authorization', apiKey)
+				.send(fakeBook)
+				.expect('Content-Type', /json/)
+				.expect(404)
+				.end((err, res) => {
+					expect(res.body).to.be.an('object');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					done(err);
+				});
+		});
+
+		it('returns a message unknown server error when trying to update', (done) => {
+			const fakeBook = {
+				title: 'Book VII',
+				categorys: categoryid,
+				pages: 10,
+				author: authorid,
+				published: Date.now(),
 				_id: 1234,
 			};
 
@@ -303,15 +327,15 @@ describe('# Testing Book Routes', () => {
 				.set('Authorization', apiKey)
 				.send(fakeBook)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
-					expect(res.body.results).to.be.an('object').that.has.all.keys('message', 'name', 'stringValue', 'kind', 'value', 'path');
-					expect(res.body.results).to.have.property('message').to.be.a('string');
-					expect(res.body.results).to.have.property('name').to.be.a('string').equal('CastError');
-					expect(res.body.results).to.have.property('kind').to.be.a('string').equal('ObjectId');
+					expect(res.body.error).to.be.an('object').that.has.all.keys('message', 'name', 'stringValue', 'kind', 'value', 'path');
+					expect(res.body.error).to.have.property('message').to.be.a('string');
+					expect(res.body.error).to.have.property('name').to.be.a('string').equal('CastError');
+					expect(res.body.error).to.have.property('kind').to.be.a('string').equal('ObjectId');
 					done(err);
 				});
 		});
@@ -335,10 +359,25 @@ describe('# Testing Book Routes', () => {
 		});
 
 		it('returns a message failed to delete a book', (done) => {
+			const book = { _id: mongoose.Types.ObjectId(123456789012) };
+			supertest(server)
+				.delete(`/api/v1/books/${book._id}`)
+				.set('Authorization', apiKey)
+				.expect(404)
+				.end((err, res) => {
+					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					done(err);
+				});
+		});
+
+		it('returns a message unknown server error when trying to delete', (done) => {
 			const book = { _id: 1234 };
 			supertest(server)
 				.delete(`/api/v1/books/${book._id}`)
 				.set('Authorization', apiKey)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
 					expect(res.body).to.have.property('success').equal(false);
