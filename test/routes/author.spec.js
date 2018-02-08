@@ -115,14 +115,14 @@ describe('# Testing Author Routes', () => {
 		});
 
 		// == testing for author not found ==
-		it('returns a message authorid not found', (done) => {
+		it('returns a message unknown server error when trying to find author with id', (done) => {
 			const fakeAuthor = { _id: '1234' };
 
 			supertest(server)
 				.get(`/api/v1/authors/${fakeAuthor._id}`)
 				.set('Authorization', apiKey)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
 					expect(res.body).to.have.property('success').equal(false);
@@ -160,7 +160,7 @@ describe('# Testing Author Routes', () => {
 		});
 
 		// == testing for failed to save new author ==
-		it('returns a message failed to save author data', (done) => {
+		it('returns a message unknown server error when trying to save new author', (done) => {
 			const fakeAuthor = {
 				fullname: 'Fake Doe',
 				emails: 'fake@fakedoe.com',
@@ -172,14 +172,14 @@ describe('# Testing Author Routes', () => {
 				.set('Authorization', apiKey)
 				.send(fakeAuthor)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
-					expect(res.body.results).to.be.an('object').that.has.all.keys('errors', '_message', 'message', 'name');
-					expect(res.body.results).to.have.property('errors').to.be.an('object');
-					expect(res.body.results).to.have.property('name').to.be.a('string').equal('ValidationError');
+					expect(res.body.error).to.be.an('object').that.has.all.keys('errors', '_message', 'message', 'name');
+					expect(res.body.error).to.have.property('errors').to.be.an('object');
+					expect(res.body.error).to.have.property('name').to.be.a('string').equal('ValidationError');
 					done(err);
 				});
 		});
@@ -220,6 +220,27 @@ describe('# Testing Author Routes', () => {
 			const fakeAuthor = {
 				fullname: 'Fake Doe',
 				email: 'fake@fakedoe.com',
+				_id: mongoose.Types.ObjectId(123456789012),
+			};
+
+			supertest(server)
+				.put(`/api/v1/authors/${fakeAuthor._id}`)
+				.set('Authorization', apiKey)
+				.send(fakeAuthor)
+				.expect('Content-Type', /json/)
+				.expect(404)
+				.end((err, res) => {
+					expect(res.body).to.be.an('object');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					done(err);
+				});
+		});
+
+		it('returns a message unknown server error when trying to update', (done) => {
+			const fakeAuthor = {
+				fullname: 'Fake Doe',
+				email: 'fake@fakedoe.com',
 				_id: 1234,
 			};
 
@@ -228,15 +249,15 @@ describe('# Testing Author Routes', () => {
 				.set('Authorization', apiKey)
 				.send(fakeAuthor)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
-					expect(res.body.results).to.be.an('object').that.has.all.keys('message', 'name', 'stringValue', 'kind', 'value', 'path');
-					expect(res.body.results).to.have.property('message').to.be.a('string');
-					expect(res.body.results).to.have.property('name').to.be.a('string').equal('CastError');
-					expect(res.body.results).to.have.property('kind').to.be.a('string').equal('ObjectId');
+					expect(res.body.error).to.be.an('object').that.has.all.keys('message', 'name', 'stringValue', 'kind', 'value', 'path');
+					expect(res.body.error).to.have.property('message').to.be.a('string');
+					expect(res.body.error).to.have.property('name').to.be.a('string').equal('CastError');
+					expect(res.body.error).to.have.property('kind').to.be.a('string').equal('ObjectId');
 					done(err);
 				});
 		});
@@ -270,10 +291,25 @@ describe('# Testing Author Routes', () => {
 		});
 
 		it('returns a message failed to delete an author', (done) => {
+			const author = { _id: mongoose.Types.ObjectId(123456789012) };
+			supertest(server)
+				.delete(`/api/v1/authors/${author._id}`)
+				.set('Authorization', apiKey)
+				.expect(404)
+				.end((err, res) => {
+					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					done(err);
+				});
+		});
+
+		it('returns a message message unknown server error when trying to delete', (done) => {
 			const author = { _id: 1234 };
 			supertest(server)
 				.delete(`/api/v1/authors/${author._id}`)
 				.set('Authorization', apiKey)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
 					expect(res.body).to.have.property('success').equal(false);
