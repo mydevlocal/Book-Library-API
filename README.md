@@ -17,7 +17,7 @@ npm install
 
 ## Usage example
 
-Before you can run this app, make sure you set `env variable` on your machine. For me, i use linux so i can create it directly in my terminal:
+Before you can run this app, make sure you've set `env variable` on your machine. For me, i use linux so i can create it directly in my terminal:
 
 ```sh
 export HOST=localhost
