@@ -1,13 +1,14 @@
 {
     "apps": [
         {
-            "name": "Book Library API",
+            "name": "Book_Library_API",
             "script": "server.js",
             "merge_logs": true,
             "max_restarts": 10,
+            "instances": 4,
             "max_memory_restart": "100M",
             "env": {
-                "PORT": 3001,
+                "PORT": 3245,
                 "NODE_ENV": "production"
             }
         }
