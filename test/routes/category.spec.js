@@ -97,14 +97,14 @@ describe('# Testing Category Routes', () => {
 		});
 
 		// == testing for category not found ==
-		it('returns a message categoryid not found', (done) => {
+		it('returns a message unknown server error when trying to find a category with id', (done) => {
 			const fakeCategory = { _id: '1234' };
 
 			supertest(server)
 				.get(`/api/v1/categories/${fakeCategory._id}`)
 				.set('Authorization', apiKey)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
 					expect(res.body).to.have.property('success').equal(false);
@@ -140,7 +140,7 @@ describe('# Testing Category Routes', () => {
 		});
 
 		// == testing for failed to save new category ==
-		it('returns a message failed to save category data', (done) => {
+		it('returns a message unknown server error when trying to save new category', (done) => {
 			const fakeCategory = {
 				category_names: 'Literature',
 			};
@@ -150,14 +150,14 @@ describe('# Testing Category Routes', () => {
 				.set('Authorization', apiKey)
 				.send(fakeCategory)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
-					expect(res.body.results).to.be.an('object').that.has.all.keys('errors', '_message', 'message', 'name');
-					expect(res.body.results).to.have.property('errors').to.be.an('object');
-					expect(res.body.results).to.have.property('name').to.be.a('string').equal('ValidationError');
+					expect(res.body.error).to.be.an('object').that.has.all.keys('errors', '_message', 'message', 'name');
+					expect(res.body.error).to.have.property('errors').to.be.an('object');
+					expect(res.body.error).to.have.property('name').to.be.a('string').equal('ValidationError');
 					done(err);
 				});
 		});
@@ -195,6 +195,26 @@ describe('# Testing Category Routes', () => {
 		it('returns a message failed to update category data', (done) => {
 			const fakeCategory = {
 				category_name: 'Mistery',
+				_id: mongoose.Types.ObjectId(123456789012),
+			};
+
+			supertest(server)
+				.put(`/api/v1/categories/${fakeCategory._id}`)
+				.set('Authorization', apiKey)
+				.send(fakeCategory)
+				.expect('Content-Type', /json/)
+				.expect(404)
+				.end((err, res) => {
+					expect(res.body).to.be.an('object');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					done(err);
+				});
+		});
+
+		it('returns a message unknown server error when trying to update', (done) => {
+			const fakeCategory = {
+				category_name: 'Mistery',
 				_id: 1234,
 			};
 
@@ -203,14 +223,14 @@ describe('# Testing Category Routes', () => {
 				.set('Authorization', apiKey)
 				.send(fakeCategory)
 				.expect('Content-Type', /json/)
-				.expect(200)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(false);
 					expect(res.body).to.have.property('message').to.be.a('string');
-					expect(res.body.results).to.be.an('object').that.has.all.keys('message', 'name', 'stringValue', 'kind', 'value', 'path');
-					expect(res.body.results).to.have.property('name').to.be.a('string').equal('CastError');
-					expect(res.body.results).to.have.property('kind').to.be.a('string').equal('ObjectId');
+					expect(res.body.error).to.be.an('object').that.has.all.keys('message', 'name', 'stringValue', 'kind', 'value', 'path');
+					expect(res.body.error).to.have.property('name').to.be.a('string').equal('CastError');
+					expect(res.body.error).to.have.property('kind').to.be.a('string').equal('ObjectId');
 					done(err);
 				});
 		});
@@ -234,10 +254,25 @@ describe('# Testing Category Routes', () => {
 		});
 
 		it('returns a message failed to delete a category', (done) => {
+			const category = { _id: mongoose.Types.ObjectId(123456789012) };
+			supertest(server)
+				.delete(`/api/v1/categories/${category._id}`)
+				.set('Authorization', apiKey)
+				.expect(404)
+				.end((err, res) => {
+					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					done(err);
+				});
+		});
+
+		it('returns a message unknown server error when trying to delete', (done) => {
 			const category = { _id: 1234 };
 			supertest(server)
 				.delete(`/api/v1/categories/${category._id}`)
 				.set('Authorization', apiKey)
+				.expect(500)
 				.end((err, res) => {
 					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
 					expect(res.body).to.have.property('success').equal(false);
