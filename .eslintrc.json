@@ -1,0 +1,46 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "node": true
+    },
+    "extends": [
+        "airbnb-base"
+    ],
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": [
+            "error",
+            "tab",
+            { "ignoreComments": true }
+        ],
+        "no-tabs": 0,
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
+        "prefer-destructuring": ["error", {
+            "VariableDeclarator": {
+                "array": false,
+                "object": true
+            },
+            "AssignmentExpression": {
+                "array": false,
+                "object": true
+            }
+        }, {
+            "enforceForRenamedProperties": false
+        }]
+    }
+}

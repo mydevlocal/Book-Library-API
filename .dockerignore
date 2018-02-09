@@ -1,0 +1,7 @@
+.git
+node_modules
+.nyc_output
+.travis.yml
+.gitignore
+Dockerfile
+docker-compose.yml

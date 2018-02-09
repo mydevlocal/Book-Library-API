@@ -6,8 +6,8 @@ module.exports = {
 			reconnectTries: Number.MAX_VALUE,
 			reconnectInterval: 500,
 			poolSize: 5,
-			bufferMaxEntries: 0
-		}
+			bufferMaxEntries: 0,
+		},
 	},
-	jwtSecret: { tokenKey: process.env.JWT_TOKEN }
+	jwtSecret: { tokenKey: process.env.JWT_TOKEN },
 };

@@ -1,8 +1,33 @@
 language: node_js
 node_js:
+<<<<<<< HEAD
   - "/*"
 cache:
   directories:
     - "node_modules"
 script:
   - npm run build-prod
+=======
+  - "8"
+services:
+  - mongodb
+cache:
+  directories:
+    - "node_modules"
+env:
+  global:
+    - JWT_TOKEN=randomtoken7582048
+    - MONGODB_URI=mongodb://localhost:27017/db_book_test
+    - PORT=3356
+  matrix:
+    - NODE_ENV=development
+before_install:
+  - npm install -g eslint
+install:
+  - npm --production=false install
+script:
+  - if [ "${NODE_ENV}" = "development" ]; then npm test --silent; fi
+branches:
+  only:
+    - master
+>>>>>>> master
