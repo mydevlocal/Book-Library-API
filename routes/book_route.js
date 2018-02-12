@@ -40,6 +40,56 @@ router.get('/books', isVerified, async (req, res, next) => {
 	}
 });
 
+// == no token required for display & populer route ==
+// == display all books in homepage ==
+router.get('/books/display', async (req, res, next) => {
+	/* eslint one-var: ["error", { var: "never" }] */
+	const offset = req.query.offset ? parseInt(req.query.offset, 10) : null;
+	const limit = req.query.limit ? parseInt(req.query.limit, 10) : null;
+	let total,
+		results;
+
+	try {
+		total = await Book.count({});
+		results = await Book.find({}).sort({ title: 1 })
+			.populate('author').populate('category')
+			.skip(offset)
+			.limit(limit);
+
+		res.status(200).json({
+			success: true, message: 'All books are available.', results, limit, total,
+		});
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Unknown server error when trying to fetching all book data', error: err });
+	}
+});
+
+// == find book by title in homepage ==
+router.get('/books/display/:title', async (req, res, next) => {
+	const { title } = req.params;
+	let book;
+	try {
+		// query like case-insensitive with regex
+		book = await Book.find({ title: { $regex: title, $options: 'i' } }).populate('author').populate('category');
+		res.status(200).json({ success: true, message: `Book with title: ${title} is found.`, results: book });
+	} catch (err) {
+		res.status(500).json({ success: false, message: `Unknown server error when trying to find a book with title: ${title}.`, error: err });
+	}
+});
+
+// == list populer books by stars ==
+router.get('/books/populer', async (req, res, next) => {
+	let results;
+	try {
+		results = await Book.find({}).sort({ title: 1 }).select('_id title').limit(7);
+
+		res.status(200).json({ success: true, message: 'Ready to list the populer books', results });
+	} catch (err) {
+		res.status(500).json({ success: false, message: 'Unknown server error when trying to fetching all book data', error: err });
+	}
+});
+
+
 // == find book by id ==
 router.get('/books/:bookid', isVerified, async (req, res, next) => {
 	const { bookid } = req.params;
