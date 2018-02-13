@@ -183,6 +183,82 @@ describe('# Testing Book Routes', () => {
 		});
 	});
 
+	// == It's expected to display all books & the populer books
+	// no token required for these 3 endpoint (display,display/:title,populer) ==
+	describe('GET /api/v1/books/display', () => {
+		it('returns a list of book (no apikey required)', (done) => {
+			supertest(server)
+				.get('/api/v1/books/display')
+				.query({ offset: 0, limit: 9 })
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.end((err, res) => {
+					const today = res.body.results[0].published;
+
+					expect(res.body).to.be.an('object');
+					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body.results).to.be.an('array');
+					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
+					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
+					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
+					/* eslint-disable */
+					expect(res.body.results[0]).to.have.property('pages').to.be.finite;
+					/* eslint-enable */
+					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
+					expect(res.body.results[0]).to.have.property('published').to.equal(today);
+					done(err);
+				});
+		});
+
+		it('returns a list of matched books title (no apikey required)', (done) => {
+			const title = 'book';
+
+			supertest(server)
+				.get(`/api/v1/books/display/${title}`)
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.end((error, res) => {
+					const today = res.body.results[0].published;
+
+					expect(res.body).to.be.an('object');
+					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body.results).to.be.an('array');
+					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
+					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
+					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
+					/* eslint-disable */
+					expect(res.body.results[0]).to.have.property('pages').to.be.finite;
+					/* eslint-enable */
+					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
+					expect(res.body.results[0]).to.have.property('published').to.equal(today);
+					done(error);
+				});
+		});
+	});
+
+	describe('GET /api/v1/books/populer', () => {
+		it('returns a list of populer book (no apikey required)', (done) => {
+			supertest(server)
+				.get('/api/v1/books/populer')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.end((err, res) => {
+					expect(res.body).to.be.an('object');
+					expect(res.body).to.have.property('success').equal(true);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body.results).to.be.an('array');
+					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('_id', 'title');
+					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
+					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
+					done(err);
+				});
+		});
+	});
+
 	// == Testing the save book expecting status 201 of success ==
 	describe('POST /api/v1/books', () => {
 		it('saves a new book', (done) => {
