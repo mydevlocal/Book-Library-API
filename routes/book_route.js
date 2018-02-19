@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const isVerified = require('../config/token_verification').TokenVerification;
+const isVerified = require('../utils/token_verification').TokenVerification;
 const Book = require('../models/book_model');
 
 // == find all books ==
