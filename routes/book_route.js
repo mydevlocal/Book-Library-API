@@ -40,7 +40,7 @@ router.get('/books', isVerified, async (req, res, next) => {
 	}
 });
 
-// == no token required for display & populer route ==
+// == no token required for display, synopsis & populer route ==
 // == display all books in homepage ==
 router.get('/books/display', async (req, res, next) => {
 	/* eslint one-var: ["error", { var: "never" }] */
@@ -89,6 +89,17 @@ router.get('/books/populer', async (req, res, next) => {
 	}
 });
 
+// == show a book synopsis ==
+router.get('/books/synopsis/:bookid', async (req, res, next) => {
+	const { bookid } = req.params;
+	let book;
+	try {
+		book = await Book.findById({ _id: bookid });
+		res.status(200).json({ success: true, message: `Book with id: ${bookid} is found.`, results: book });
+	} catch (err) {
+		res.status(500).json({ success: false, message: `Unknown server error when trying to find a book with id: ${bookid}.`, error: err });
+	}
+});
 
 // == find book by id ==
 router.get('/books/:bookid', isVerified, async (req, res, next) => {
