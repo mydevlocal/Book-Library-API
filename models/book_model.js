@@ -7,6 +7,7 @@ const BookSchema = new Schema({
 	pages: { type: Number },
 	author: { type: mongoose.Schema.ObjectId, ref: 'Author', required: true },
 	published: { type: Date, required: true },
+	synopsis: { type: String },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Book', BookSchema);
