@@ -122,6 +122,7 @@ router.post('/books', isVerified, async (req, res, next) => {
 	const { pages } = req.body;
 	const { author } = req.body;
 	const { published } = req.body;
+	const { synopsis } = req.body;
 
 	const book = new Book({
 		title,
@@ -129,6 +130,7 @@ router.post('/books', isVerified, async (req, res, next) => {
 		pages,
 		author,
 		published,
+		synopsis,
 	});
 
 	let newBook;
@@ -150,6 +152,7 @@ router.put('/books/:bookid', isVerified, async (req, res, next) => {
 	const { pages } = req.body;
 	const { author } = req.body;
 	const { published } = req.body;
+	const { synopsis } = req.body;
 
 	const updatedBook = new Book({
 		title,
@@ -157,6 +160,7 @@ router.put('/books/:bookid', isVerified, async (req, res, next) => {
 		pages,
 		author,
 		published,
+		synopsis,
 		_id: bookid,
 	});
 
