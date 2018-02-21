@@ -63,6 +63,7 @@ describe('# Testing Book Routes', () => {
 								pages: 256,
 								author: authorid,
 								published: Date.now(),
+								synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 							});
 							book.save();
 						}).catch((err) => { done(err); });
@@ -72,6 +73,7 @@ describe('# Testing Book Routes', () => {
 		});
 
 		it('returns a list of books', (done) => {
+			this.timeout(500);
 			supertest(server)
 				.get('/api/v1/books')
 				.set('Authorization', apiKey)
@@ -84,7 +86,7 @@ describe('# Testing Book Routes', () => {
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('array');
-					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis', 'createdAt', 'updatedAt');
 					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
 					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
@@ -93,7 +95,8 @@ describe('# Testing Book Routes', () => {
 					/* eslint-enable */
 					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('published').to.equal(today);
-					done(err);
+					expect(res.body.results[0]).to.have.property('synopsis').to.be.a('string');
+					setTimeout(done(err), 300);
 				});
 		});
 
@@ -111,7 +114,7 @@ describe('# Testing Book Routes', () => {
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('array');
-					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis', 'createdAt', 'updatedAt');
 					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
 					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
@@ -120,6 +123,7 @@ describe('# Testing Book Routes', () => {
 					/* eslint-enable */
 					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('published').to.equal(today);
+					expect(res.body.results[0]).to.have.property('synopsis').to.be.a('string');
 					done(err);
 				});
 		});
@@ -135,6 +139,7 @@ describe('# Testing Book Routes', () => {
 				pages: 233,
 				author: authorid,
 				published: Date.now(),
+				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			});
 
 			book
@@ -150,7 +155,7 @@ describe('# Testing Book Routes', () => {
 							expect(res.body).to.be.an('object');
 							expect(res.body).to.have.property('success').equal(true);
 							expect(res.body).to.have.property('message').to.be.a('string');
-							expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+							expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis', 'createdAt', 'updatedAt');
 							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 							expect(res.body.results).to.have.property('title').to.be.a('string');
 							expect(res.body.results).to.have.property('category').to.be.an('object');
@@ -159,6 +164,7 @@ describe('# Testing Book Routes', () => {
 							/* eslint-enable */
 							expect(res.body.results).to.have.property('author').to.be.an('object');
 							expect(res.body.results).to.have.property('published').to.equal(today);
+							expect(res.body.results).to.have.property('synopsis').to.be.a('string');
 							done(error);
 						});
 				});
@@ -183,7 +189,7 @@ describe('# Testing Book Routes', () => {
 		});
 	});
 
-	// == It's expected to display all books & the populer books
+	// == It's expected to display all books, synopsis & the populer books
 	// no token required for these 3 endpoint (display,display/:title,populer) ==
 	describe('GET /api/v1/books/display', () => {
 		it('returns a list of book (no apikey required)', (done) => {
@@ -199,7 +205,7 @@ describe('# Testing Book Routes', () => {
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('array');
-					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis', 'createdAt', 'updatedAt');
 					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
 					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
@@ -208,6 +214,7 @@ describe('# Testing Book Routes', () => {
 					/* eslint-enable */
 					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('published').to.equal(today);
+					expect(res.body.results[0]).to.have.property('synopsis').to.be.a('string');
 					done(err);
 				});
 		});
@@ -226,7 +233,7 @@ describe('# Testing Book Routes', () => {
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
 					expect(res.body.results).to.be.an('array');
-					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+					expect(res.body.results[0]).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis', 'createdAt', 'updatedAt');
 					expect(res.body.results[0]).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results[0]).to.have.property('title').to.be.a('string');
 					expect(res.body.results[0]).to.have.property('category').to.be.an('object');
@@ -235,6 +242,7 @@ describe('# Testing Book Routes', () => {
 					/* eslint-enable */
 					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('published').to.equal(today);
+					expect(res.body.results[0]).to.have.property('synopsis').to.be.a('string');
 					done(error);
 				});
 		});
@@ -259,6 +267,62 @@ describe('# Testing Book Routes', () => {
 		});
 	});
 
+	describe('GET /api/v1/books/synopsis', () => {
+		it('returns a book\'s synopsis', (done) => {
+			// == create a fake book ==
+			const book = new Book({
+				title: 'Book V',
+				category: categoryid,
+				pages: 233,
+				author: authorid,
+				published: Date.now(),
+				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
+			});
+
+			book
+				.save((err, data) => {
+					supertest(server)
+						.get(`/api/v1/books/synopsis/${data._id}`)
+						.expect('Content-Type', /json/)
+						.expect(200)
+						.end((error, res) => {
+							const today = res.body.results.published;
+
+							expect(res.body).to.be.an('object');
+							expect(res.body).to.have.property('success').equal(true);
+							expect(res.body).to.have.property('message').to.be.a('string');
+							expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis', 'createdAt', 'updatedAt');
+							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
+							expect(res.body.results).to.have.property('title').to.be.a('string');
+							expect(res.body.results).to.have.property('category').to.be.an('object');
+							/* eslint-disable */
+							expect(res.body.results).to.have.property('pages').to.be.finite;
+							/* eslint-enable */
+							expect(res.body.results).to.have.property('author').to.be.an('object');
+							expect(res.body.results).to.have.property('published').to.equal(today);
+							expect(res.body.results).to.have.property('synopsis').to.be.a('string');
+							done(error);
+						});
+				});
+		});
+
+		it('returns a unknown server error when trying to find book with id', (done) => {
+			const fakeBook = { _id: '1234' };
+
+			supertest(server)
+				.get(`/api/v1/books/synopsis/${fakeBook._id}`) /* eslint no-underscore-dangle: 0 */
+				.expect('Content-Type', /json/)
+				.expect(500)
+				.end((err, res) => {
+					expect(res.body).to.be.an('object').that.has.all.keys('success', 'message', 'error');
+					expect(res.body).to.have.property('success').equal(false);
+					expect(res.body).to.have.property('message').to.be.a('string');
+					expect(res.body).to.have.property('error').to.be.an('object');
+					done(err);
+				});
+		});
+	});
+
 	// == Testing the save book expecting status 201 of success ==
 	describe('POST /api/v1/books', () => {
 		it('saves a new book', (done) => {
@@ -268,6 +332,7 @@ describe('# Testing Book Routes', () => {
 				pages: 198,
 				author: authorid,
 				published: Date.now(),
+				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			};
 
 			supertest(server)
@@ -282,7 +347,7 @@ describe('# Testing Book Routes', () => {
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
-					expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'createdAt', 'updatedAt');
+					expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis', 'createdAt', 'updatedAt');
 					expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 					expect(res.body.results).to.have.property('title').to.be.a('string');
 					expect(res.body.results).to.have.property('category').to.be.a('string');
@@ -291,6 +356,7 @@ describe('# Testing Book Routes', () => {
 					/* eslint-enable */
 					expect(res.body.results).to.have.property('author').to.be.a('string');
 					expect(res.body.results).to.have.property('published').to.equal(today);
+					expect(res.body.results).to.have.property('synopsis').to.be.a('string');
 					done(err);
 				});
 		});
@@ -303,6 +369,7 @@ describe('# Testing Book Routes', () => {
 				pages: 198,
 				author: authorid,
 				published: Date.now(),
+				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			};
 
 			supertest(server)
@@ -332,6 +399,7 @@ describe('# Testing Book Routes', () => {
 				pages: 199,
 				author: authorid,
 				published: Date.now(),
+				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			};
 
 			Book
@@ -349,7 +417,7 @@ describe('# Testing Book Routes', () => {
 							expect(res.body).to.be.an('object');
 							expect(res.body).to.have.property('success').equal(true);
 							expect(res.body).to.have.property('message').to.be.a('string');
-							expect(res.body.results).to.be.an('object').that.has.all.keys('_id', 'title', 'category', 'pages', 'author', 'published');
+							expect(res.body.results).to.be.an('object').that.has.all.keys('_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis');
 							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 							expect(res.body.results).to.have.property('title').to.be.a('string');
 							expect(res.body.results).to.have.property('category').to.be.a('string');
@@ -358,6 +426,7 @@ describe('# Testing Book Routes', () => {
 							/* eslint-enable */
 							expect(res.body.results).to.have.property('author').to.be.a('string');
 							expect(res.body.results).to.have.property('published').to.equal(today);
+							expect(res.body.results).to.have.property('synopsis').to.be.a('string');
 							done(error);
 						});
 				});
@@ -371,6 +440,7 @@ describe('# Testing Book Routes', () => {
 				pages: 10,
 				author: authorid,
 				published: Date.now(),
+				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 				_id: mongoose.Types.ObjectId(123456789012),
 			};
 
@@ -395,6 +465,7 @@ describe('# Testing Book Routes', () => {
 				pages: 10,
 				author: authorid,
 				published: Date.now(),
+				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 				_id: 1234,
 			};
 
