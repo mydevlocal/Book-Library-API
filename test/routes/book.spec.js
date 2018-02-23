@@ -10,7 +10,6 @@ describe('# Testing Book Routes', () => {
 	let apiKey,
 		authorid,
 		categoryid;
-	const setDate = Date.now();
 
 	before((done) => {
 		mockgoose.prepareStorage().then(() => {
@@ -63,7 +62,7 @@ describe('# Testing Book Routes', () => {
 								category: categoryid,
 								pages: 256,
 								author: authorid,
-								published: setDate,
+								published: Date.now(),
 								synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 							});
 							book.save();
@@ -138,7 +137,7 @@ describe('# Testing Book Routes', () => {
 				category: categoryid,
 				pages: 233,
 				author: authorid,
-				published: setDate,
+				published: Date.now(),
 				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			});
 
@@ -275,7 +274,7 @@ describe('# Testing Book Routes', () => {
 				category: categoryid,
 				pages: 233,
 				author: authorid,
-				published: setDate,
+				published: Date.now(),
 				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			});
 
@@ -331,7 +330,7 @@ describe('# Testing Book Routes', () => {
 				category: categoryid,
 				pages: 198,
 				author: authorid,
-				published: setDate,
+				published: Date.now(),
 				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			};
 
@@ -368,7 +367,7 @@ describe('# Testing Book Routes', () => {
 				categorys: categoryid,
 				pages: 198,
 				author: authorid,
-				published: setDate,
+				published: Date.now(),
 				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			};
 
@@ -398,7 +397,7 @@ describe('# Testing Book Routes', () => {
 				category: categoryid,
 				pages: 199,
 				author: authorid,
-				published: setDate,
+				published: Date.now(),
 				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 			};
 
@@ -439,7 +438,7 @@ describe('# Testing Book Routes', () => {
 				categorys: categoryid,
 				pages: 10,
 				author: authorid,
-				published: setDate,
+				published: Date.now(),
 				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 				_id: mongoose.Types.ObjectId(123456789012),
 			};
@@ -464,7 +463,7 @@ describe('# Testing Book Routes', () => {
 				categorys: categoryid,
 				pages: 10,
 				author: authorid,
-				published: setDate,
+				published: Date.now(),
 				synopsis: 'Lorem ipsum dolor nam sit rerum adipisci nihil id totam.',
 				_id: 1234,
 			};
