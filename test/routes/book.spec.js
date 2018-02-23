@@ -266,8 +266,8 @@ describe('# Testing Book Routes', () => {
 		});
 	});
 
-	describe('GET /api/v1/books/synopsis{bookid}', () => {
-		it('returns a book\'s synopsis', (done) => {
+	describe('GET /api/v1/books/synopsis/{bookid}', () => {
+		it('returns a book\'s synopsis {no apiKey required}', (done) => {
 			// == create a fake book ==
 			const book = new Book({
 				title: 'Book V',
