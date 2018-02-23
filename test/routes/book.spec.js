@@ -73,7 +73,6 @@ describe('# Testing Book Routes', () => {
 		});
 
 		it('returns a list of books', (done) => {
-			this.timeout(500);
 			supertest(server)
 				.get('/api/v1/books')
 				.set('Authorization', apiKey)
@@ -96,7 +95,7 @@ describe('# Testing Book Routes', () => {
 					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
 					expect(res.body.results[0]).to.have.property('published').to.equal(today);
 					expect(res.body.results[0]).to.have.property('synopsis').to.be.a('string');
-					setTimeout(done(err), 300);
+					done(err);
 				});
 		});
 
