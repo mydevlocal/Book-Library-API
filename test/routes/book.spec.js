@@ -79,6 +79,8 @@ describe('# Testing Book Routes', () => {
 				.expect('Content-Type', /json/)
 				.expect(200)
 				.end((err, res) => {
+					const today = res.body.results[0].published;
+
 					expect(res.body).to.be.an('object');
 					expect(res.body).to.have.property('success').equal(true);
 					expect(res.body).to.have.property('message').to.be.a('string');
@@ -91,7 +93,7 @@ describe('# Testing Book Routes', () => {
 					expect(res.body.results[0]).to.have.property('pages').to.be.finite;
 					/* eslint-enable */
 					expect(res.body.results[0]).to.have.property('author').to.be.an('object');
-					expect(res.body.results[0]).to.have.property('published').to.equal(res.body.results[0].published);
+					expect(res.body.results[0]).to.have.property('published').to.equal(today);
 					expect(res.body.results[0]).to.have.property('synopsis').to.be.a('string');
 					done(err);
 				});
