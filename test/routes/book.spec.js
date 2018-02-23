@@ -266,7 +266,7 @@ describe('# Testing Book Routes', () => {
 		});
 	});
 
-	describe('GET /api/v1/books/synopsis', () => {
+	describe('GET /api/v1/books/synopsis{bookid}', () => {
 		it('returns a book\'s synopsis', (done) => {
 			// == create a fake book ==
 			const book = new Book({
@@ -293,11 +293,11 @@ describe('# Testing Book Routes', () => {
 							expect(res.body.results).to.be.an('object').that.has.all.keys('__v', '_id', 'title', 'category', 'pages', 'author', 'published', 'synopsis', 'createdAt', 'updatedAt');
 							expect(res.body.results).to.have.property('_id').to.be.a('string').to.have.lengthOf(24);
 							expect(res.body.results).to.have.property('title').to.be.a('string');
-							expect(res.body.results).to.have.property('category').to.be.an('object');
+							expect(res.body.results).to.have.property('category').to.be.a('string');
 							/* eslint-disable */
 							expect(res.body.results).to.have.property('pages').to.be.finite;
 							/* eslint-enable */
-							expect(res.body.results).to.have.property('author').to.be.an('object');
+							expect(res.body.results).to.have.property('author').to.be.a('string');
 							expect(res.body.results).to.have.property('published').to.equal(today);
 							expect(res.body.results).to.have.property('synopsis').to.be.a('string');
 							done(error);
