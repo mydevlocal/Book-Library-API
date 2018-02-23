@@ -1,0 +1,56 @@
+version: "3"
+services:
+  proxy:
+    build: nginx
+    container_name: book_library_proxy
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites-available/default:/etc/nginx/conf.d/default.conf
+      - /var/log/nginx:/var/log/nginx
+    depends_on:
+      - web
+    ports:
+      - 80:80
+    restart: always
+    networks:
+      - backend
+      - frontend
+
+  web:
+    build: pm2
+    container_name: book_library_web
+    volumes:
+      - ../:/app
+    ports:
+      - "3022:3245"
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - MONGODB_URI=mongodb://db/db_book
+      - JWT_TOKEN=randomtoken88374622
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cd /app &&
+        pm2 start infrastructure/processes.json --no-daemon
+    networks:
+      - backend
+
+  db:
+    build: mongodb
+    container_name: book_library_db
+    volumes:
+      - "~/container/volumes/mongo-data:/data/db"
+    restart: always
+    networks:
+      - backend
+
+networks:
+  backend:
+  frontend:
+
+volumes:
+  mongo-data:
